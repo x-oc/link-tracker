@@ -1,11 +1,13 @@
 package backend.academy.bot.command;
 
+import backend.academy.bot.model.CommandArguments;
+
 public interface Command {
 
     String command();
 
     String description();
 
-    String handle(String input);
+    String handle(CommandArguments arguments);
 
 }

@@ -1,6 +1,7 @@
 package backend.academy.bot;
 
 import backend.academy.bot.command.Command;
+import backend.academy.bot.model.CommandArguments;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,12 @@ public class MessageHandler {
         String inputString = update.message().text();
         if (inputString == null) return null;
         String inputCommand = inputString.split(" ")[0];
+        String userArguments = inputString.contains(" ") ?
+            inputString.substring(inputString.indexOf(" ") + 1) : "";
+        CommandArguments commandArguments = new CommandArguments(userArguments, chatId);
         for (Command command : commands) {
             if (command.command().equals(inputCommand)) {
-                String arguments = inputString.contains(" ") ?
-                    inputString.substring(inputString.indexOf(" ") + 1) : "";
-                return new SendMessage(chatId, command.handle(arguments));
+                return new SendMessage(chatId, command.handle(commandArguments));
             }
         }
         return new SendMessage(chatId, "Command not found");

@@ -1,9 +1,15 @@
 package backend.academy.bot.command;
 
+import backend.academy.bot.model.CommandArguments;
+import backend.academy.bot.service.LinksStorage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class StartCommand implements Command {
+
+    private final LinksStorage linksStorage;
 
     @Override
     public String command() {
@@ -16,7 +22,8 @@ public class StartCommand implements Command {
     }
 
     @Override
-    public String handle(String input) {
+    public String handle(CommandArguments arguments) {
+        linksStorage.registerUser(arguments.chatId());
         return "You started the bot! Type /help to see available commands.";
     }
 }
