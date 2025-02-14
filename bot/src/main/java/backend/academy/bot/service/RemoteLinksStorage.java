@@ -1,0 +1,47 @@
+package backend.academy.bot.service;
+
+import backend.academy.bot.client.ScrapperClient;
+import backend.academy.bot.dto.request.RemoveLinkRequest;
+import backend.academy.bot.model.Link;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+@Primary
+@Service
+@RequiredArgsConstructor
+public class RemoteLinksStorage implements LinksStorage {
+
+    private final ScrapperClient scrapperClient;
+
+    @Override
+    public void registerUser(Long id) {
+        scrapperClient.registerChat(id);
+    }
+
+    @Override
+    public boolean addUserLink (Long userId, String url) {
+        var response = scrapperClient.removeLink(userId, new RemoveLinkRequest(URI.create(url)));
+        return !response.isError();
+    }
+
+    @Override
+    public boolean removeUserLink(Long userId, String url) {
+        var response = scrapperClient.removeLink(userId, new RemoveLinkRequest(URI.create(url)));
+        return !response.isError();
+    }
+
+    @Override
+    public List<Link> getLinks(Long userId) {
+        var response = scrapperClient.listLinks(userId).answer();
+        var linkDTOs = response.links();
+        List<Link> links = new ArrayList<>();
+        for (var link : linkDTOs) {
+            links.add(new Link(link.url().toString()));
+        }
+        return links;
+    }
+}
