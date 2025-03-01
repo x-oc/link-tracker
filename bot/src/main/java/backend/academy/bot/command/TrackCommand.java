@@ -23,7 +23,7 @@ public class TrackCommand implements Command {
 
     @Override
     public String handle(CommandArguments arguments) {
-        if (!linksStorage.addUserLink(arguments.chatId(), arguments.userArguments())) {
+        if (!linksStorage.addUserLink(arguments.chatId(), arguments.userArguments(), null, null)) {
             return "Invalid link!";
         }
         return String.format("You started tracking the link %s! You will get a notification on its' update.",

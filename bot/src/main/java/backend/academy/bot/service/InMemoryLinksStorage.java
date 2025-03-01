@@ -1,6 +1,8 @@
 package backend.academy.bot.service;
 
+import backend.academy.bot.model.Filter;
 import backend.academy.bot.model.Link;
+import backend.academy.bot.model.Tag;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,7 +21,7 @@ public class InMemoryLinksStorage implements LinksStorage {
     }
 
     @Override
-    public boolean addUserLink(Long userId, String url) {
+    public boolean addUserLink(Long userId, String url, List<Tag> tags, List<Filter> filters) {
         Link link = new Link(url);
         links.computeIfAbsent(userId, _ -> new ArrayList<>()).add(link);
         return true;

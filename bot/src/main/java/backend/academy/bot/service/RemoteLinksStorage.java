@@ -1,8 +1,11 @@
 package backend.academy.bot.service;
 
 import backend.academy.bot.client.ScrapperClient;
+import backend.academy.bot.dto.request.AddLinkRequest;
 import backend.academy.bot.dto.request.RemoveLinkRequest;
+import backend.academy.bot.model.Filter;
 import backend.academy.bot.model.Link;
+import backend.academy.bot.model.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -23,8 +26,8 @@ public class RemoteLinksStorage implements LinksStorage {
     }
 
     @Override
-    public boolean addUserLink (Long userId, String url) {
-        var response = scrapperClient.removeLink(userId, new RemoveLinkRequest(URI.create(url)));
+    public boolean addUserLink (Long userId, String url, List<Tag> tags, List<Filter> filters) {
+        var response = scrapperClient.addLink(userId, new AddLinkRequest(URI.create(url), tags, filters));
         return !response.isError();
     }
 
