@@ -33,8 +33,12 @@ public class RemoteLinksStorage implements LinksStorage {
 
     @Override
     public boolean removeUserLink(Long userId, String url) {
-        var response = scrapperClient.removeLink(userId, new RemoveLinkRequest(URI.create(url)));
-        return !response.isError();
+        try {
+            var response = scrapperClient.removeLink(userId, new RemoveLinkRequest(URI.create(url)));
+            return !response.isError();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     @Override
@@ -42,6 +46,9 @@ public class RemoteLinksStorage implements LinksStorage {
         var response = scrapperClient.listLinks(userId).answer();
         var linkDTOs = response.links();
         List<Link> links = new ArrayList<>();
+        if (linkDTOs == null) {
+            return links;
+        }
         for (var link : linkDTOs) {
             links.add(new Link(link.url().toString()));
         }

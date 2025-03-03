@@ -1,8 +1,22 @@
 app:
+  scheduler:
+    enable: true
+    interval: 30s
+    force-check-delay: 30s
+    max-links-per-check: 100
   github-token: ${GITHUB_TOKEN} # env variable
   stackoverflow:
     key: ${SO_TOKEN_KEY}
     access-token: ${SO_ACCESS_TOKEN}
+
+provider:
+  github:
+    url: https://api.github.com
+  stackoverflow:
+    url: https://api.stackexchange.com/2.3
+
+bot:
+  url: ${BOT_URL:http://localhost:8090}
 
 spring:
   application:
@@ -13,6 +27,8 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+  config:
+    import: optional:file:./application.env
 
 server:
   port: 8081

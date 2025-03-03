@@ -17,7 +17,7 @@ server:
   port: 8090
 
 scrapper:
-  url: ${SCRAPPER_URL:http://localhost:8080}
+  url: ${SCRAPPER_URL:http://localhost:8081}
 
 springdoc:
   swagger-ui:
