@@ -23,8 +23,9 @@ public class UntrackCommand implements Command {
 
     @Override
     public String handle(CommandArguments arguments) {
-        if (!linksStorage.removeUserLink(arguments.chatId(), arguments.userArguments())) {
-           return String.format("Link '%s' not found", arguments.userArguments());
+        String response = linksStorage.removeUserLink(arguments.chatId(), arguments.userArguments());
+        if (!(response.equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message))) {
+           return response;
         }
         return String.format("You stopped tracking the link %s! " +
             "You will no longer get notifications on its' updates.", arguments.userArguments());

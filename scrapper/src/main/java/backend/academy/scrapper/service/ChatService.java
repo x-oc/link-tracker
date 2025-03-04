@@ -1,5 +1,7 @@
 package backend.academy.scrapper.service;
 
+import backend.academy.scrapper.exception.ChatAlreadyRegisteredException;
+import backend.academy.scrapper.exception.ChatNotFoundException;
 import backend.academy.scrapper.repository.LinkRepository;
 import backend.academy.scrapper.repository.TgChatLinkRepository;
 import backend.academy.scrapper.repository.TgChatRepository;
@@ -18,7 +20,7 @@ public class ChatService {
     @Transactional
     public void registerChat(Long chatId) {
         if (chatRepository.isExists(chatId)) {
-            throw new RuntimeException(String.format("Chat %s already registered!", chatId));
+            throw new ChatAlreadyRegisteredException(chatId);
         }
         chatRepository.add(chatId);
     }
@@ -26,7 +28,7 @@ public class ChatService {
     @Transactional
     public void deleteChat(Long chatId) {
         if (!chatRepository.isExists(chatId)) {
-            throw new RuntimeException(String.format("Chat %s not found!", chatId));
+            throw new ChatNotFoundException(chatId);
         }
         var links = tgChatLinkRepository.findAllByChatId(chatId);
         tgChatLinkRepository.removeAllByChatId(chatId);

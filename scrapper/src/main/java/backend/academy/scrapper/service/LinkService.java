@@ -10,6 +10,9 @@ import backend.academy.scrapper.api.InformationProvider;
 import backend.academy.scrapper.api.LinkInformation;
 import backend.academy.scrapper.dto.response.LinkResponse;
 import backend.academy.scrapper.dto.response.ListLinksResponse;
+import backend.academy.scrapper.exception.LinkAlreadyAddedException;
+import backend.academy.scrapper.exception.LinkNotFoundException;
+import backend.academy.scrapper.exception.LinkNotSupportedException;
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repository.LinkRepository;
 import backend.academy.scrapper.repository.TgChatLinkRepository;
@@ -36,15 +39,15 @@ public class LinkService {
     @Transactional
     public LinkResponse addLink(URI link, Long tgChatId) {
         if (linkRepository.findByUrl(link.toString()).isPresent()) {
-            throw new RuntimeException(String.format("Link %s is already added", link));
+            throw new LinkAlreadyAddedException(link);
         }
         InformationProvider provider = informationProviders.get(link.getHost());
         if (provider == null || !provider.isSupported(link)) {
-            throw new RuntimeException(String.format("Link %s is not supported", link));
+            throw new LinkNotSupportedException(link.toString());
         }
         LinkInformation linkInformation = provider.fetchInformation(link);
         if (linkInformation == null) {
-            throw new RuntimeException(String.format("Link %s is not supported", link));
+            throw new LinkNotSupportedException(link.toString());
         }
         OffsetDateTime lastModified = OffsetDateTime.now();
         if (!linkInformation.events().isEmpty()) {
@@ -72,7 +75,7 @@ public class LinkService {
             }
             return new LinkResponse(link.id(), URI.create(link.url()), link.tags(), link.filters());
         } else {
-            throw new RuntimeException(String.format("Link %s not found", url));
+            throw new LinkNotFoundException(url.toString());
         }
     }
 
@@ -84,7 +87,7 @@ public class LinkService {
     @Transactional
     public void update(String url, OffsetDateTime lastModified, String info) {
         if (linkRepository.findByUrl(url).isEmpty()) {
-            throw new RuntimeException(String.format("Link %s not found", url));
+            throw new LinkNotFoundException(url);
         }
         linkRepository.update(url, lastModified, info);
     }

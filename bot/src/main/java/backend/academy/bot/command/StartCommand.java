@@ -23,7 +23,6 @@ public class StartCommand implements Command {
 
     @Override
     public String handle(CommandArguments arguments) {
-        linksStorage.registerUser(arguments.chatId());
-        return "You started the bot! Type /help to see available commands.";
+        return linksStorage.registerUser(arguments.chatId());
     }
 }

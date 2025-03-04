@@ -1,8 +1,6 @@
 package backend.academy.scrapper.repository;
 
-import backend.academy.scrapper.model.Filter;
 import backend.academy.scrapper.model.Link;
-import backend.academy.scrapper.model.Tag;
 import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -46,10 +44,10 @@ public class InMemoryLinkRepository implements LinkRepository {
     }
 
     @Override
-    public List<Link> findByTag(Tag tag) {
+    public List<Link> findByTag(String tag) {
         List<Link> answerLinks = new ArrayList<>();
         for (Link link : links) {
-            if (link.tags().contains(tag.name())) {
+            if (link.tags().contains(tag)) {
                 answerLinks.add(link);
             }
         }
@@ -57,10 +55,10 @@ public class InMemoryLinkRepository implements LinkRepository {
     }
 
     @Override
-    public List<Link> findByFilter(Filter filter) {
+    public List<Link> findByFilter(String filter) {
         List<Link> answerLinks = new ArrayList<>();
         for (Link link : links) {
-            if (link.filters().contains(filter.name())) {
+            if (link.filters().contains(filter)) {
                 answerLinks.add(link);
             }
         }

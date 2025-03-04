@@ -3,9 +3,7 @@ package backend.academy.bot.service;
 import backend.academy.bot.client.ScrapperClient;
 import backend.academy.bot.dto.request.AddLinkRequest;
 import backend.academy.bot.dto.request.RemoveLinkRequest;
-import backend.academy.bot.model.Filter;
 import backend.academy.bot.model.Link;
-import backend.academy.bot.model.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -21,23 +19,33 @@ public class RemoteLinksStorage implements LinksStorage {
     private final ScrapperClient scrapperClient;
 
     @Override
-    public void registerUser(Long id) {
-        scrapperClient.registerChat(id);
+    public String registerUser(Long id) {
+        var response = scrapperClient.registerChat(id);
+        if (response.getStatusCode().isError()) {
+            return response.getBody().toString();
+        }
+        return Responses.REGISTER_USER_SUCCESS.message;
     }
 
     @Override
-    public boolean addUserLink (Long userId, String url, List<Tag> tags, List<Filter> filters) {
+    public String addUserLink (Long userId, String url, List<String> tags, List<String> filters) {
         var response = scrapperClient.addLink(userId, new AddLinkRequest(URI.create(url), tags, filters));
-        return !response.isError();
+        if (response.isError()) {
+            return response.apiErrorResponse().description();
+        }
+        return Responses.ADD_USER_LINK_SUCCESS.message;
     }
 
     @Override
-    public boolean removeUserLink(Long userId, String url) {
+    public String removeUserLink(Long userId, String url) {
         try {
             var response = scrapperClient.removeLink(userId, new RemoveLinkRequest(URI.create(url)));
-            return !response.isError();
+            if (response.isError()) {
+                return response.apiErrorResponse().description();
+            }
+            return Responses.REMOVE_USER_LINK_SUCCESS.message;
         } catch (IllegalArgumentException e) {
-            return false;
+            return Responses.REMOVE_USER_LINK_FAIL.message;
         }
     }
 

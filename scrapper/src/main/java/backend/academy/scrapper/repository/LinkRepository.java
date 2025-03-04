@@ -1,8 +1,6 @@
 package backend.academy.scrapper.repository;
 
-import backend.academy.scrapper.model.Filter;
 import backend.academy.scrapper.model.Link;
-import backend.academy.scrapper.model.Tag;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -18,9 +16,9 @@ public interface LinkRepository {
 
     Optional<Link> findByUrl(String url);
 
-    List<Link> findByTag(Tag tag);
+    List<Link> findByTag(String tag);
 
-    List<Link> findByFilter(Filter filter);
+    List<Link> findByFilter(String filter);
 
     List<Link> findLinksCheckedAfter(Duration after, int limit);
 
