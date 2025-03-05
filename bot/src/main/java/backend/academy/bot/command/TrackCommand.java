@@ -16,7 +16,7 @@ import java.util.Objects;
 public class TrackCommand implements Command {
 
     private final LinksStorage linksStorage;
-    private final UserStateStorage stateMachine;
+    private final UserStateStorage stateStorage;
 
     @Override
     public String command() {
@@ -30,7 +30,7 @@ public class TrackCommand implements Command {
 
     @Override
     public String handle(CommandArguments arguments) {
-        UserState userState = stateMachine.getUserState(arguments.chatId());
+        UserState userState = stateStorage.getUserState(arguments.chatId());
         if (userState == UserState.AWAITING_FILTERS) {
             return handleAddFilters(arguments);
         }
@@ -46,20 +46,22 @@ public class TrackCommand implements Command {
             return response;
         }
 
-        stateMachine.setUserState(arguments.chatId(), UserState.AWAITING_TAGS);
-        stateMachine.setLastLink(arguments.chatId(), new Link(arguments.userArguments()));
+        stateStorage.setUserState(arguments.chatId(), UserState.AWAITING_TAGS);
+        stateStorage.setLastLink(arguments.chatId(), new Link(arguments.userArguments()));
         return "Enter tags for the link, please (or 'none' to skip): ";
     }
 
     public String handleAddTags(CommandArguments arguments) {
         List<String> tags = Arrays.stream(arguments.userArguments().split(" +")).toList();
-        Link lastLink = stateMachine.getLastLink(arguments.chatId());
+        Link lastLink = stateStorage.getLastLink(arguments.chatId());
         if (lastLink == null) {
             return "Link not found!";
         }
         if (tags.isEmpty()) {
             return "Wrong command arguments!";
         }
+        lastLink.tags(tags);
+        stateStorage.setLastLink(arguments.chatId(), lastLink);
         boolean result = true;
         if (!Objects.equals(tags.getFirst().toLowerCase(), "none")) {
             result &= (linksStorage.removeUserLink(arguments.chatId(), lastLink.url())
@@ -68,16 +70,16 @@ public class TrackCommand implements Command {
                 .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message));
         }
         if (!result) {
-            stateMachine.clearUserState(arguments.chatId());
+            stateStorage.clearUserState(arguments.chatId());
             return "Something went wrong!";
         }
-        stateMachine.setUserState(arguments.chatId(), UserState.AWAITING_FILTERS);
+        stateStorage.setUserState(arguments.chatId(), UserState.AWAITING_FILTERS);
         return "Now enter filters, please (or 'none'): ";
     }
 
     public String handleAddFilters(CommandArguments arguments) {
         List<String> filters = Arrays.stream(arguments.userArguments().split(" +")).toList();
-        Link lastLink = stateMachine.getLastLink(arguments.chatId());
+        Link lastLink = stateStorage.getLastLink(arguments.chatId());
         if (lastLink == null) {
             return "Link not found!";
         }
@@ -91,7 +93,7 @@ public class TrackCommand implements Command {
             result &= (linksStorage.addUserLink(arguments.chatId(), lastLink.url(), lastLink.tags(), filters)
                 .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message));
         }
-        stateMachine.clearUserState(arguments.chatId());
+        stateStorage.clearUserState(arguments.chatId());
         if (!result) {
             return "Something went wrong!";
         }

@@ -23,7 +23,7 @@ public class MessageHandler {
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
         String inputString = update.message().text();
-        if (inputString == null) return null;
+        if (inputString == null) return new SendMessage(chatId, "Command not found");
         UserState userState = userStateStorage.getUserState(chatId);
         if (userState != null) {
             return userStateHandler.handleUserState(userState, chatId, inputString);

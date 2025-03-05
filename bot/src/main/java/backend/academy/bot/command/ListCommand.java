@@ -33,6 +33,6 @@ public class ListCommand implements Command {
         for (Link link : links) {
             sb.append(link.url()).append("\n ");
         }
-        return sb.toString();
+        return sb.toString().stripTrailing();
     }
 }

@@ -1,6 +1,5 @@
 package backend.academy.scrapper.exception;
 
-import java.net.URI;
 import org.springframework.http.HttpStatus;
 
 public class LinkNotSupportedException extends ScrapperException {
