@@ -1,16 +1,18 @@
 package backend.academy.scrapper.repository;
 
 import org.springframework.stereotype.Component;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class InMemoryChatRepository implements TgChatRepository {
 
-    private List<Long> chatIds;
+    private final Set<Long> chatIds = new HashSet<>();
 
     @Override
     public List<Long> findAll() {
-        return chatIds;
+        return chatIds.stream().toList();
     }
 
     @Override

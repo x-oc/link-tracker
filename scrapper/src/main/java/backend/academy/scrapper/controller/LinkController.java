@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/links", consumes = "application/json", produces = "application/json")
 @RequiredArgsConstructor
-public class LinksController {
+public class LinkController {
 
     private final LinkService linkService;
 

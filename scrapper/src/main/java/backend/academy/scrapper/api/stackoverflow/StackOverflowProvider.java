@@ -51,7 +51,8 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
                 Map.of("score", String.valueOf(item.score()))
             )
         );
-        if (config.stackOverflow().accessToken() != null &&
+        if (config.stackOverflow() != null &&
+            config.stackOverflow().accessToken() != null &&
             !config.stackOverflow().accessToken().isBlank() &&
             !"${SO_ACCESS_TOKEN}".equals(config.stackOverflow().accessToken())) {
             authorizationQueryParam =

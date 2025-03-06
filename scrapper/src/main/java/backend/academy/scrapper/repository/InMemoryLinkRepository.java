@@ -23,6 +23,10 @@ public class InMemoryLinkRepository implements LinkRepository {
 
     @Override
     public long add(Link link) {
+        Optional<Link> alreadyExisting = findByUrl(link.url());
+        if (alreadyExisting.isPresent()) {
+            return alreadyExisting.get().id();
+        }
         link.id(nextId++);
         links.add(link);
         return link.id();

@@ -20,14 +20,15 @@ import org.springframework.stereotype.Component;
 public class LinkUpdateScheduler {
 
     private final LinkService linkService;
-    private final ScrapperConfig appConfig;
+    private final ScrapperConfig scrapperConfig;
     private final Map<String, InformationProvider> informationProviders;
     private final LinkUpdateSender sender;
 
     @Scheduled(fixedDelayString = "#{@'app-backend.academy.scrapper.config.ScrapperConfig'.scheduler.interval}")
     public void update() {
         log.info("Update started");
-        linkService.listOldLinks(appConfig.scheduler().forceCheckDelay(), appConfig.scheduler().maxLinksPerCheck())
+        linkService.listOldLinks(scrapperConfig.scheduler().forceCheckDelay(),
+                                 scrapperConfig.scheduler().maxLinksPerCheck())
             .forEach(link -> {
                 log.info("Updating link {}", link.url());
                 URI uri = URI.create(link.url());
