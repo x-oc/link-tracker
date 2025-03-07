@@ -9,11 +9,13 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Component
 public class GithubProvider extends EventCollectableInformationProvider<GithubEventInfo> {
 
@@ -106,14 +108,19 @@ public class GithubProvider extends EventCollectableInformationProvider<GithubEv
     @Override
     public LinkInformation fetchInformation(URI url) {
         if (!isSupported(url)) {
+            log.atWarn().setMessage("Trying to fetch unsupported url.")
+                .addKeyValue("url", url)
+                .addKeyValue("provider", "github")
+                .log();
             return null;
         }
-        var info = executeRequest(
-            "/repos" + url.getPath() + "/events?per_page=" + MAX_PER_UPDATE,
-            GithubEventsHolder.class,
-            GithubEventsHolder.EMPTY
-        );
+        var uri = "/repos%s/events?per_page=%s".formatted(url.getPath(), MAX_PER_UPDATE);
+        var info = executeRequest(uri, GithubEventsHolder.class, GithubEventsHolder.EMPTY);
+
         if (info == null || info.equals(GithubEventsHolder.EMPTY)) {
+            log.atWarn().setMessage("GitHub returned no info.")
+                .addKeyValue("uri", uri)
+                .log();
             return null;
         }
         return new LinkInformation(
@@ -123,7 +130,7 @@ public class GithubProvider extends EventCollectableInformationProvider<GithubEv
                 var collector = getCollector(it.type());
                 if (collector == null) {
                     return new LinkUpdateEvent(
-                        "github." + it.type().toLowerCase(),
+                        "github.%s".formatted(it.type().toLowerCase()),
                         it.lastModified(),
                         Map.of("type", it.type())
                     );

@@ -15,10 +15,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class StackOverflowProvider extends EventCollectableInformationProvider<StackOverflowItem> {
     private static final Pattern QUESTION_PATTERN = Pattern.compile("https://stackoverflow.com/questions/(\\d+).*");
@@ -77,15 +79,20 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
     public LinkInformation fetchInformation(URI url) {
         Matcher matcher = QUESTION_PATTERN.matcher(url.toString());
         if (!matcher.matches()) {
+            log.atWarn().setMessage("Trying to fetch unsupported url.")
+                .addKeyValue("url", url)
+                .addKeyValue("provider", "stackoverflow")
+                .log();
             return null;
         }
         var questionId = matcher.group(1);
-        var info = executeRequest(
-            "/questions/" + questionId + "?site=stackoverflow" + "&" + authorizationQueryParam,
-            StackOverflowInfoResponse.class,
-            StackOverflowInfoResponse.EMPTY
-        );
+        var uri = "/questions/%s?site=stackoverflow&%s".formatted(questionId, authorizationQueryParam);
+        var info = executeRequest(uri, StackOverflowInfoResponse.class, StackOverflowInfoResponse.EMPTY);
+
         if (info == null || info.equals(StackOverflowInfoResponse.EMPTY) || info.items.length == 0) {
+            log.atWarn().setMessage("StackOverflow returned no info.")
+                .addKeyValue("uri", uri)
+                .log();
             return null;
         }
         List<LinkUpdateEvent> events = linkUpdateEventsCollector().values().stream()
@@ -137,5 +144,4 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
     private record StackOverflowInfoResponse(StackOverflowItem[] items) {
         public static final StackOverflowInfoResponse EMPTY = new StackOverflowInfoResponse(null);
     }
-
 }

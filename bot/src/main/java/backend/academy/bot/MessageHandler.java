@@ -23,11 +23,17 @@ public class MessageHandler {
     public SendMessage handle(Update update) {
         Long chatId = update.message().chat().id();
         String inputString = update.message().text();
-        if (inputString == null) return new SendMessage(chatId, "Command not found");
+        if (inputString == null) {
+            return new SendMessage(chatId, "Command not found");
+        }
         UserState userState = userStateStorage.getUserState(chatId);
         if (userState != null) {
             return userStateHandler.handleUserState(userState, chatId, inputString);
         }
+        return handleCommand(chatId, inputString);
+    }
+
+    private SendMessage handleCommand(Long chatId, String inputString) {
         String inputCommand = inputString.split(" +")[0];
         String userArguments = inputString.contains(" ") ?
             inputString.substring(inputString.indexOf(" ") + 1) : "";

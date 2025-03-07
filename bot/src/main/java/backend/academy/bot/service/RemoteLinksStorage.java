@@ -5,13 +5,11 @@ import backend.academy.bot.dto.request.AddLinkRequest;
 import backend.academy.bot.dto.request.RemoveLinkRequest;
 import backend.academy.bot.model.Link;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-@Primary
 @Service
 @RequiredArgsConstructor
 public class RemoteLinksStorage implements LinksStorage {

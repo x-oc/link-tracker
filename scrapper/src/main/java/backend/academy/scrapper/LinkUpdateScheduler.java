@@ -10,11 +10,11 @@ import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.sender.LinkUpdateSender;
 import backend.academy.scrapper.service.LinkService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-@Log4j2
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LinkUpdateScheduler {
@@ -26,18 +26,18 @@ public class LinkUpdateScheduler {
 
     @Scheduled(fixedDelayString = "#{@'app-backend.academy.scrapper.config.ScrapperConfig'.scheduler.interval}")
     public void update() {
-        log.info("Update started");
+        log.info("Update started.");
         linkService.listOldLinks(scrapperConfig.scheduler().forceCheckDelay(),
                                  scrapperConfig.scheduler().maxLinksPerCheck())
             .forEach(link -> {
-                log.info("Updating link {}", link.url());
+                log.atInfo().setMessage("Updating link.").addKeyValue("link", link.url()).log();
                 URI uri = URI.create(link.url());
                 InformationProvider provider = informationProviders.get(uri.getHost());
                 LinkInformation linkInformation = provider.fetchInformation(uri);
                 linkInformation = provider.filter(linkInformation, link.lastUpdated(), link.metaInformation());
                 processLinkInformation(linkInformation, link);
             });
-        log.info("Update finished");
+        log.info("Update finished.");
     }
 
     private void processLinkInformation(LinkInformation linkInformation, Link link) {

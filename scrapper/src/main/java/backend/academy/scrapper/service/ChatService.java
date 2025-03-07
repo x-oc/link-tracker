@@ -6,9 +6,11 @@ import backend.academy.scrapper.repository.LinkRepository;
 import backend.academy.scrapper.repository.TgChatLinkRepository;
 import backend.academy.scrapper.repository.TgChatRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -23,6 +25,9 @@ public class ChatService {
             throw new ChatAlreadyRegisteredException(chatId);
         }
         chatRepository.add(chatId);
+        log.atInfo().setMessage("Registered new chat.")
+            .addKeyValue("chatId", chatId)
+            .log();
     }
 
     @Transactional
@@ -38,5 +43,8 @@ public class ChatService {
             }
         });
         chatRepository.remove(chatId);
+        log.atInfo().setMessage("Deleted chat.")
+            .addKeyValue("chatId", chatId)
+            .log();
     }
 }

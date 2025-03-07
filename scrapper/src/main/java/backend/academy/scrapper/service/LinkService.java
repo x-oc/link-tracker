@@ -17,9 +17,11 @@ import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repository.LinkRepository;
 import backend.academy.scrapper.repository.TgChatLinkRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LinkService {
@@ -37,7 +39,7 @@ public class LinkService {
     }
 
     @Transactional
-    public LinkResponse addLink(URI link, Long tgChatId) {
+    public LinkResponse addLink(URI link, Long chatId) {
         if (linkRepository.findByUrl(link.toString()).isPresent()) {
             throw new LinkAlreadyAddedException(link);
         }
@@ -60,19 +62,27 @@ public class LinkService {
             OffsetDateTime.now(),
             lastModified
         ));
-        tgChatLinkRepository.add(tgChatId, link.toString());
+        tgChatLinkRepository.add(chatId, link.toString());
+        log.atInfo().setMessage("Added new link.")
+            .addKeyValue("chatId", chatId)
+            .addKeyValue("link", link.toString())
+            .log();
         return new LinkResponse(id, link, List.of(), List.of());
     }
 
     @Transactional
-    public LinkResponse removeLink(URI url, Long tgChatId) {
+    public LinkResponse removeLink(URI url, Long chatId) {
         Optional<Link> optionalLink = linkRepository.findByUrl(url.toString());
         if (optionalLink.isPresent()) {
             Link link = optionalLink.get();
-            tgChatLinkRepository.remove(tgChatId, url.toString());
+            tgChatLinkRepository.remove(chatId, url.toString());
             if (tgChatLinkRepository.findAllByUrl(url.toString()).isEmpty()) {
                 linkRepository.remove(url.toString());
             }
+            log.atInfo().setMessage("Removed link.")
+                .addKeyValue("chatId", chatId)
+                .addKeyValue("link", link.toString())
+                .log();
             return new LinkResponse(link.id(), URI.create(link.url()), link.tags(), link.filters());
         } else {
             throw new LinkNotFoundException(url.toString());
