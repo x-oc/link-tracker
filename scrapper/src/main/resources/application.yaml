@@ -38,7 +38,9 @@ springdoc:
     enabled: true
     path: /swagger-ui
 
-#logging:
-#  structured:
-#    format:
-#      console: ecs
+logging:
+  structured:
+    format:
+      console: ecs
+  file:
+    name: log.json

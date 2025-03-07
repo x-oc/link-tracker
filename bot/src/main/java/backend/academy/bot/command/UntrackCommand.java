@@ -28,7 +28,7 @@ public class UntrackCommand implements Command {
             return response;
         }
         return String.format(
-                "You stopped tracking the link %s! " + "You will no longer get notifications on its' updates.",
+                "You stopped tracking the link %s! You will no longer get notifications on its' updates.",
                 arguments.userArguments());
     }
 }
