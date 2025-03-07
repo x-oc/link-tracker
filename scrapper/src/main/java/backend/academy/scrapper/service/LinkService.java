@@ -1,11 +1,5 @@
 package backend.academy.scrapper.service;
 
-import java.net.URI;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import backend.academy.scrapper.api.InformationProvider;
 import backend.academy.scrapper.api.LinkInformation;
 import backend.academy.scrapper.dto.response.LinkResponse;
@@ -16,6 +10,12 @@ import backend.academy.scrapper.exception.LinkNotSupportedException;
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repository.LinkRepository;
 import backend.academy.scrapper.repository.TgChatLinkRepository;
+import java.net.URI;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,8 +33,8 @@ public class LinkService {
     public ListLinksResponse listLinks(Long tgChatId) {
         var links = tgChatLinkRepository.findAllByChatId(tgChatId);
         var linkResponses = links.stream()
-            .map(link -> new LinkResponse(link.id(), URI.create(link.url()), link.tags(), link.filters()))
-            .toList();
+                .map(link -> new LinkResponse(link.id(), URI.create(link.url()), link.tags(), link.filters()))
+                .toList();
         return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
@@ -55,18 +55,14 @@ public class LinkService {
         if (!linkInformation.events().isEmpty()) {
             lastModified = linkInformation.events().getFirst().lastModified();
         }
-        var id = linkRepository.add(new Link(
-            link.toString(),
-            List.of(),
-            List.of(),
-            OffsetDateTime.now(),
-            lastModified
-        ));
+        var id =
+                linkRepository.add(new Link(link.toString(), List.of(), List.of(), OffsetDateTime.now(), lastModified));
         tgChatLinkRepository.add(chatId, link.toString());
-        log.atInfo().setMessage("Added new link.")
-            .addKeyValue("chatId", chatId)
-            .addKeyValue("link", link.toString())
-            .log();
+        log.atInfo()
+                .setMessage("Added new link.")
+                .addKeyValue("chatId", chatId)
+                .addKeyValue("link", link.toString())
+                .log();
         return new LinkResponse(id, link, List.of(), List.of());
     }
 
@@ -74,15 +70,16 @@ public class LinkService {
     public LinkResponse removeLink(URI url, Long chatId) {
         Optional<Link> optionalLink = linkRepository.findByUrl(url.toString());
         if (optionalLink.isPresent()) {
-            Link link = optionalLink.get();
+            Link link = optionalLink.orElseThrow();
             tgChatLinkRepository.remove(chatId, url.toString());
             if (tgChatLinkRepository.findAllByUrl(url.toString()).isEmpty()) {
                 linkRepository.remove(url.toString());
             }
-            log.atInfo().setMessage("Removed link.")
-                .addKeyValue("chatId", chatId)
-                .addKeyValue("link", link.toString())
-                .log();
+            log.atInfo()
+                    .setMessage("Removed link.")
+                    .addKeyValue("chatId", chatId)
+                    .addKeyValue("link", link.toString())
+                    .log();
             return new LinkResponse(link.id(), URI.create(link.url()), link.tags(), link.filters());
         } else {
             throw new LinkNotFoundException(url.toString());

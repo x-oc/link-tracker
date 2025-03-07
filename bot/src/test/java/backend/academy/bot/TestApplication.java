@@ -3,7 +3,6 @@ package backend.academy.bot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-
 @ComponentScan(basePackages = {"backend.academy.bot"})
 public class TestApplication {
 

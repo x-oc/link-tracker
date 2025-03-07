@@ -24,41 +24,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class StackOverflowProvider extends EventCollectableInformationProvider<StackOverflowItem> {
     private static final Pattern QUESTION_PATTERN = Pattern.compile("https://stackoverflow.com/questions/(\\d+).*");
-    private static final TypeReference<HashMap<String, String>> STRING_HASHMAP = new TypeReference<>() {
-    };
+    private static final TypeReference<HashMap<String, String>> STRING_HASHMAP = new TypeReference<>() {};
     private final String authorizationQueryParam;
     private final ObjectMapper mapper;
 
     @Autowired
     public StackOverflowProvider(
-        @Value("${provider.stackoverflow.url}") String apiUrl,
-        ScrapperConfig config,
-        ObjectMapper mapper
-    ) {
+            @Value("${provider.stackoverflow.url}") String apiUrl, ScrapperConfig config, ObjectMapper mapper) {
         super(apiUrl);
         this.mapper = mapper;
         registerCollector(
-            "AnswerEvent",
-            item -> new LinkUpdateEvent(
-                "stackoverflow.answers_event",
-                item.lastModified(),
-                Map.of("count", String.valueOf(item.answersCount()))
-            )
-        );
+                "AnswerEvent",
+                item -> new LinkUpdateEvent(
+                        "stackoverflow.answers_event",
+                        item.lastModified(),
+                        Map.of("count", String.valueOf(item.answersCount()))));
         registerCollector(
-            "ScoreEvent",
-            item -> new LinkUpdateEvent(
-                "stackoverflow.score_event",
-                item.lastModified(),
-                Map.of("score", String.valueOf(item.score()))
-            )
-        );
-        if (config.stackOverflow() != null &&
-            config.stackOverflow().accessToken() != null &&
-            !config.stackOverflow().accessToken().isBlank() &&
-            !"${SO_ACCESS_TOKEN}".equals(config.stackOverflow().accessToken())) {
-            authorizationQueryParam =
-                "access_token=" + config.stackOverflow().accessToken() + "&key=" + config.stackOverflow().key();
+                "ScoreEvent",
+                item -> new LinkUpdateEvent(
+                        "stackoverflow.score_event",
+                        item.lastModified(),
+                        Map.of("score", String.valueOf(item.score()))));
+        if (config.stackOverflow() != null
+                && config.stackOverflow().accessToken() != null
+                && !config.stackOverflow().accessToken().isBlank()
+                && !"${SO_ACCESS_TOKEN}".equals(config.stackOverflow().accessToken())) {
+            authorizationQueryParam = "access_token=" + config.stackOverflow().accessToken() + "&key="
+                    + config.stackOverflow().key();
         } else {
             authorizationQueryParam = "";
         }
@@ -79,10 +71,11 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
     public LinkInformation fetchInformation(URI url) {
         Matcher matcher = QUESTION_PATTERN.matcher(url.toString());
         if (!matcher.matches()) {
-            log.atWarn().setMessage("Trying to fetch unsupported url.")
-                .addKeyValue("url", url)
-                .addKeyValue("provider", "stackoverflow")
-                .log();
+            log.atWarn()
+                    .setMessage("Trying to fetch unsupported url.")
+                    .addKeyValue("url", url)
+                    .addKeyValue("provider", "stackoverflow")
+                    .log();
             return null;
         }
         var questionId = matcher.group(1);
@@ -90,25 +83,21 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
         var info = executeRequest(uri, StackOverflowInfoResponse.class, StackOverflowInfoResponse.EMPTY);
 
         if (info == null || info.equals(StackOverflowInfoResponse.EMPTY) || info.items.length == 0) {
-            log.atWarn().setMessage("StackOverflow returned no info.")
-                .addKeyValue("uri", uri)
-                .log();
+            log.atWarn()
+                    .setMessage("StackOverflow returned no info.")
+                    .addKeyValue("uri", uri)
+                    .log();
             return null;
         }
         List<LinkUpdateEvent> events = linkUpdateEventsCollector().values().stream()
-            .map(stackOverflowItemLinkUpdateEventFunction ->
-                stackOverflowItemLinkUpdateEventFunction.apply(info.items()[0]))
-            .toList();
+                .map(stackOverflowItemLinkUpdateEventFunction ->
+                        stackOverflowItemLinkUpdateEventFunction.apply(info.items()[0]))
+                .toList();
         HashMap<String, String> metaInformation = new HashMap<>();
         for (LinkUpdateEvent event : events) {
             metaInformation.putAll(event.additionalData());
         }
-        return new LinkInformation(
-            url,
-            info.items()[0].title(),
-            events,
-            mapper.writeValueAsString(metaInformation)
-        );
+        return new LinkInformation(url, info.items()[0].title(), events, mapper.writeValueAsString(metaInformation));
     }
 
     @SneakyThrows
@@ -119,9 +108,7 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
             optionalData = mapper.readValue(optionalMetaInfo, STRING_HASHMAP);
         }
         List<LinkUpdateEvent> realEvents = new ArrayList<>();
-        List<LinkUpdateEvent> filteredEvents =
-            info.events()
-                .stream()
+        List<LinkUpdateEvent> filteredEvents = info.events().stream()
                 .filter(event -> event.lastModified().isAfter(after))
                 .toList();
         for (LinkUpdateEvent event : filteredEvents) {

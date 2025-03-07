@@ -19,17 +19,18 @@ public class UserStateHandler {
         if (state == UserState.AWAITING_FILTERS) {
             CommandArguments commandArguments = new CommandArguments(inputString, chatId);
             return new SendMessage(chatId, trackCommand.handle(commandArguments))
-                .linkPreviewOptions(new LinkPreviewOptions().isDisabled(true));
+                    .linkPreviewOptions(new LinkPreviewOptions().isDisabled(true));
         }
         if (state == UserState.AWAITING_TAGS) {
             CommandArguments commandArguments = new CommandArguments(inputString, chatId);
             return new SendMessage(chatId, trackCommand.handle(commandArguments))
-                .linkPreviewOptions(new LinkPreviewOptions().isDisabled(true));
+                    .linkPreviewOptions(new LinkPreviewOptions().isDisabled(true));
         }
-        log.atWarn().setMessage("Unknown user state.")
-            .addKeyValue("chatId", chatId)
-            .addKeyValue("userState", state.name())
-            .log();
+        log.atWarn()
+                .setMessage("Unknown user state.")
+                .addKeyValue("chatId", chatId)
+                .addKeyValue("userState", state.name())
+                .log();
         return new SendMessage(chatId, "Something went wrong");
     }
 }

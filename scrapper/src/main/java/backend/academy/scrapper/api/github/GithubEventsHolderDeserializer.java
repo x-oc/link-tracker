@@ -15,10 +15,9 @@ public class GithubEventsHolderDeserializer extends StdDeserializer<GithubEvents
 
     @Override
     public GithubEventsHolder deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-        throws IOException {
+            throws IOException {
         ObjectMapper mapper = (ObjectMapper) jsonParser.getCodec();
-        return new GithubEventsHolder(
-            Arrays.stream(mapper.readValue(jsonParser, GithubEventInfo[].class)).toList()
-        );
+        return new GithubEventsHolder(Arrays.stream(mapper.readValue(jsonParser, GithubEventInfo[].class))
+                .toList());
     }
 }

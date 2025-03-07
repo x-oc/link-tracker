@@ -3,9 +3,9 @@ package backend.academy.bot.command;
 import backend.academy.bot.model.CommandArguments;
 import backend.academy.bot.model.Link;
 import backend.academy.bot.service.LinksStorage;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

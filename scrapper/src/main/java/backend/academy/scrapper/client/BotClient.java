@@ -10,5 +10,4 @@ public interface BotClient {
 
     @PostExchange("/updates")
     OptionalAnswer<Void> handleUpdates(@RequestBody @Valid LinkUpdate linkUpdate);
-
 }

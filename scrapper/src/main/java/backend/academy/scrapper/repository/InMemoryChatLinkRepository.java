@@ -1,13 +1,13 @@
 package backend.academy.scrapper.repository;
 
 import backend.academy.scrapper.model.Link;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -18,12 +18,12 @@ public class InMemoryChatLinkRepository implements TgChatLinkRepository {
 
     @Override
     public void add(long chatId, String url) {
-        chatLinks.computeIfAbsent(chatId, _ -> new ArrayList<>()).add(url);
+        chatLinks.computeIfAbsent(chatId, Long -> new ArrayList<>()).add(url);
     }
 
     @Override
     public void remove(long chatId, String url) {
-        chatLinks.computeIfAbsent(chatId, _ -> new ArrayList<>()).remove(url);
+        chatLinks.computeIfAbsent(chatId, Long -> new ArrayList<>()).remove(url);
     }
 
     @Override
@@ -43,9 +43,9 @@ public class InMemoryChatLinkRepository implements TgChatLinkRepository {
     @Override
     public List<Long> findAllByUrl(String url) {
         List<Long> chatIds = new ArrayList<>();
-        for (Long chatId : chatLinks.keySet()) {
-            if (chatLinks.get(chatId).contains(url)) {
-                chatIds.add(chatId);
+        for (var entry : chatLinks.entrySet()) {
+            if (entry.getValue().contains(url)) {
+                chatIds.add(entry.getKey());
             }
         }
         return chatIds;
@@ -58,6 +58,6 @@ public class InMemoryChatLinkRepository implements TgChatLinkRepository {
 
     @Override
     public boolean isExists(long chatId, String url) {
-        return chatLinks.computeIfAbsent(chatId, _ -> new ArrayList<>()).contains(url);
+        return chatLinks.computeIfAbsent(chatId, Long -> new ArrayList<>()).contains(url);
     }
 }

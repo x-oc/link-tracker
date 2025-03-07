@@ -16,5 +16,4 @@ public interface InformationProvider {
     default LinkInformation filter(LinkInformation info, OffsetDateTime after) {
         return filter(info, after, null);
     }
-
 }

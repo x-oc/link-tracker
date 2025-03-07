@@ -1,10 +1,10 @@
 package backend.academy.bot.command;
 
-import java.util.List;
 import backend.academy.bot.model.CommandArguments;
 import backend.academy.bot.model.Link;
 import backend.academy.bot.service.LinksStorage;
 import backend.academy.bot.service.RemoteLinksStorage;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +19,8 @@ public class ListCommandTest {
         Mockito.when(mockedLinksStorage.getLinks(1L)).thenReturn(List.of());
         ListCommand command = new ListCommand(mockedLinksStorage);
 
-        Assertions.assertThat(command.handle(new CommandArguments("", 1L)))
-            .isEqualTo("No tracked links found");
-        Mockito.verify(mockedLinksStorage, Mockito.times(1))
-            .getLinks(1L);
+        Assertions.assertThat(command.handle(new CommandArguments("", 1L))).isEqualTo("No tracked links found");
+        Mockito.verify(mockedLinksStorage, Mockito.times(1)).getLinks(1L);
     }
 
     @DisplayName("Тестирование метода ListCommand#handle с непустым списком")
@@ -34,9 +32,7 @@ public class ListCommandTest {
         ListCommand command = new ListCommand(mockedLinksStorage);
 
         String correctResponse = "Here's list of links that you are tracking now: \n link1\n link2";
-        Assertions.assertThat(command.handle(new CommandArguments("", 1L)))
-            .isEqualTo(correctResponse);
-        Mockito.verify(mockedLinksStorage, Mockito.times(1))
-            .getLinks(1L);
+        Assertions.assertThat(command.handle(new CommandArguments("", 1L))).isEqualTo(correctResponse);
+        Mockito.verify(mockedLinksStorage, Mockito.times(1)).getLinks(1L);
     }
 }

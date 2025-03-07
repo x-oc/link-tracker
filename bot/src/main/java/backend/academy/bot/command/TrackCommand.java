@@ -5,11 +5,11 @@ import backend.academy.bot.model.Link;
 import backend.academy.bot.service.LinksStorage;
 import backend.academy.bot.stateMachine.UserState;
 import backend.academy.bot.stateMachine.UserStateStorage;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -40,8 +40,7 @@ public class TrackCommand implements Command {
         if (!arguments.userArguments().matches(Link.URL_PATTERN)) {
             return "Invalid link";
         }
-        String response = linksStorage.addUserLink(
-            arguments.chatId(), arguments.userArguments(), null, null);
+        String response = linksStorage.addUserLink(arguments.chatId(), arguments.userArguments(), null, null);
         if (!response.equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message)) {
             return response;
         }
@@ -64,10 +63,12 @@ public class TrackCommand implements Command {
         stateStorage.setLastLink(arguments.chatId(), lastLink);
         boolean result = true;
         if (!Objects.equals(tags.getFirst().toLowerCase(), "none")) {
-            result &= (linksStorage.removeUserLink(arguments.chatId(), lastLink.url())
-                .equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message));
-            result &= (linksStorage.addUserLink(arguments.chatId(), lastLink.url(), tags, null)
-                .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message));
+            result &= linksStorage
+                    .removeUserLink(arguments.chatId(), lastLink.url())
+                    .equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message);
+            result &= linksStorage
+                    .addUserLink(arguments.chatId(), lastLink.url(), tags, null)
+                    .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message);
         }
         if (!result) {
             stateStorage.clearUserState(arguments.chatId());
@@ -78,7 +79,8 @@ public class TrackCommand implements Command {
     }
 
     public String handleAddFilters(CommandArguments arguments) {
-        List<String> filters = Arrays.stream(arguments.userArguments().split(" +")).toList();
+        List<String> filters =
+                Arrays.stream(arguments.userArguments().split(" +")).toList();
         Link lastLink = stateStorage.getLastLink(arguments.chatId());
         if (lastLink == null) {
             return "Link not found!";
@@ -88,16 +90,18 @@ public class TrackCommand implements Command {
         }
         boolean result = true;
         if (!Objects.equals(filters.getFirst().toLowerCase(), "none")) {
-            result &= (linksStorage.removeUserLink(arguments.chatId(), lastLink.url())
-                .equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message));
-            result &= (linksStorage.addUserLink(arguments.chatId(), lastLink.url(), lastLink.tags(), filters)
-                .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message));
+            result &= linksStorage
+                    .removeUserLink(arguments.chatId(), lastLink.url())
+                    .equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message);
+            result &= linksStorage
+                    .addUserLink(arguments.chatId(), lastLink.url(), lastLink.tags(), filters)
+                    .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message);
         }
         stateStorage.clearUserState(arguments.chatId());
         if (!result) {
             return "Something went wrong!";
         }
-        return String.format("You started tracking the link %s! You will get a notification on its' update.",
-            lastLink.url());
+        return String.format(
+                "You started tracking the link %s! You will get a notification on its' update.", lastLink.url());
     }
 }

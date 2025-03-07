@@ -8,9 +8,9 @@ import backend.academy.bot.stateMachine.UserStateStorage;
 import com.pengrad.telegrambot.model.LinkPreviewOptions;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -35,13 +35,12 @@ public class MessageHandler {
 
     private SendMessage handleCommand(Long chatId, String inputString) {
         String inputCommand = inputString.split(" +")[0];
-        String userArguments = inputString.contains(" ") ?
-            inputString.substring(inputString.indexOf(" ") + 1) : "";
+        String userArguments = inputString.contains(" ") ? inputString.substring(inputString.indexOf(" ") + 1) : "";
         CommandArguments commandArguments = new CommandArguments(userArguments, chatId);
         for (Command command : commands) {
             if (command.command().equals(inputCommand)) {
                 return new SendMessage(chatId, command.handle(commandArguments))
-                    .linkPreviewOptions(new LinkPreviewOptions().isDisabled(true));
+                        .linkPreviewOptions(new LinkPreviewOptions().isDisabled(true));
             }
         }
         return new SendMessage(chatId, "Command not found");

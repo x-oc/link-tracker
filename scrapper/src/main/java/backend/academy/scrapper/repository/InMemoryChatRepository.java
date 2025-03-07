@@ -1,9 +1,9 @@
 package backend.academy.scrapper.repository;
 
-import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.springframework.stereotype.Component;
 
 @Component
 public class InMemoryChatRepository implements TgChatRepository {
@@ -29,5 +29,4 @@ public class InMemoryChatRepository implements TgChatRepository {
     public boolean isExists(long chatId) {
         return chatIds.contains(chatId);
     }
-
 }

@@ -23,76 +23,57 @@ public class GithubProvider extends EventCollectableInformationProvider<GithubEv
     private static final int MAX_PER_UPDATE = 10;
 
     @Autowired
-    public GithubProvider(
-        @Value("${provider.github.url}") String apiUrl,
-        ScrapperConfig config
-    ) {
+    public GithubProvider(@Value("${provider.github.url}") String apiUrl, ScrapperConfig config) {
         super(WebClient.builder()
-            .baseUrl(apiUrl)
-            .defaultHeaders(headers -> {
-                if (config.githubToken() != null) {
-                    headers.set("Authorization", "Bearer " + config.githubToken());
-                }
-            })
-            .build()
-        );
+                .baseUrl(apiUrl)
+                .defaultHeaders(headers -> {
+                    if (config.githubToken() != null) {
+                        headers.set("Authorization", "Bearer " + config.githubToken());
+                    }
+                })
+                .build());
         registerCollector(
-            "PushEvent",
-            item -> new LinkUpdateEvent(
-                "github.push_event",
-                item.lastModified(),
-                Map.of(
-                    "size", String.valueOf(item.payload().size()),
-                    "repo", String.valueOf(item.repo().name()),
-                    "user", String.valueOf(item.actor().login())
-                )
-            )
-        );
+                "PushEvent",
+                item -> new LinkUpdateEvent(
+                        "github.push_event",
+                        item.lastModified(),
+                        Map.of(
+                                "size", String.valueOf(item.payload().size()),
+                                "repo", String.valueOf(item.repo().name()),
+                                "user", String.valueOf(item.actor().login()))));
         registerCollector(
-            "IssueCommentEvent",
-            item -> new LinkUpdateEvent(
-                "github.issue_comment_event",
-                item.lastModified(),
-                Map.of(
-                    "title", item.payload().issue().title(),
-                    "user", String.valueOf(item.actor().login())
-                )
-            )
-        );
+                "IssueCommentEvent",
+                item -> new LinkUpdateEvent(
+                        "github.issue_comment_event",
+                        item.lastModified(),
+                        Map.of(
+                                "title", item.payload().issue().title(),
+                                "user", String.valueOf(item.actor().login()))));
         registerCollector(
-            "IssuesEvent",
-            item -> new LinkUpdateEvent(
-                "github.issues_event",
-                item.lastModified(),
-                Map.of(
-                    "title", item.payload().issue().title(),
-                    "repo", String.valueOf(item.repo().name())
-                )
-            )
-        );
+                "IssuesEvent",
+                item -> new LinkUpdateEvent(
+                        "github.issues_event",
+                        item.lastModified(),
+                        Map.of(
+                                "title", item.payload().issue().title(),
+                                "repo", String.valueOf(item.repo().name()))));
         registerCollector(
-            "PullRequestEvent",
-            item -> new LinkUpdateEvent(
-                "github.pull_request_event",
-                item.lastModified(),
-                Map.of(
-                    "title", item.payload().pullRequest().title(),
-                    "repo", String.valueOf(item.repo().name())
-                )
-            )
-        );
+                "PullRequestEvent",
+                item -> new LinkUpdateEvent(
+                        "github.pull_request_event",
+                        item.lastModified(),
+                        Map.of(
+                                "title", item.payload().pullRequest().title(),
+                                "repo", String.valueOf(item.repo().name()))));
         registerCollector(
-            "CreateEvent",
-            item -> new LinkUpdateEvent(
-                "github.create_event",
-                item.lastModified(),
-                Map.of(
-                    "ref", String.valueOf(item.payload().ref()),
-                    "ref_type", String.valueOf(item.payload().refType()),
-                    "repo", String.valueOf(item.repo().name())
-                )
-            )
-        );
+                "CreateEvent",
+                item -> new LinkUpdateEvent(
+                        "github.create_event",
+                        item.lastModified(),
+                        Map.of(
+                                "ref", String.valueOf(item.payload().ref()),
+                                "ref_type", String.valueOf(item.payload().refType()),
+                                "repo", String.valueOf(item.repo().name()))));
     }
 
     @Override
@@ -108,46 +89,45 @@ public class GithubProvider extends EventCollectableInformationProvider<GithubEv
     @Override
     public LinkInformation fetchInformation(URI url) {
         if (!isSupported(url)) {
-            log.atWarn().setMessage("Trying to fetch unsupported url.")
-                .addKeyValue("url", url)
-                .addKeyValue("provider", "github")
-                .log();
+            log.atWarn()
+                    .setMessage("Trying to fetch unsupported url.")
+                    .addKeyValue("url", url)
+                    .addKeyValue("provider", "github")
+                    .log();
             return null;
         }
         var uri = "/repos%s/events?per_page=%s".formatted(url.getPath(), MAX_PER_UPDATE);
         var info = executeRequest(uri, GithubEventsHolder.class, GithubEventsHolder.EMPTY);
 
         if (info == null || info.equals(GithubEventsHolder.EMPTY)) {
-            log.atWarn().setMessage("GitHub returned no info.")
-                .addKeyValue("uri", uri)
-                .log();
+            log.atWarn()
+                    .setMessage("GitHub returned no info.")
+                    .addKeyValue("uri", uri)
+                    .log();
             return null;
         }
         return new LinkInformation(
-            url,
-            !info.events().isEmpty() ? info.events().getFirst().repo().name() : "",
-            info.events().stream().map(it -> {
-                var collector = getCollector(it.type());
-                if (collector == null) {
-                    return new LinkUpdateEvent(
-                        "github.%s".formatted(it.type().toLowerCase()),
-                        it.lastModified(),
-                        Map.of("type", it.type())
-                    );
-                }
-                return getCollector(it.type()).apply(it);
-            }).toList()
-        );
+                url,
+                !info.events().isEmpty() ? info.events().getFirst().repo().name() : "",
+                info.events().stream()
+                        .map(it -> {
+                            var collector = getCollector(it.type());
+                            if (collector == null) {
+                                return new LinkUpdateEvent(
+                                        "github.%s".formatted(it.type().toLowerCase()),
+                                        it.lastModified(),
+                                        Map.of("type", it.type()));
+                            }
+                            return getCollector(it.type()).apply(it);
+                        })
+                        .toList());
     }
 
     @Override
     public LinkInformation filter(LinkInformation info, OffsetDateTime after, String optionalContext) {
-        List<LinkUpdateEvent> realUpdates =
-            info.events().stream().filter(event -> event.lastModified().isAfter(after)).toList();
-        return new LinkInformation(
-            info.url(),
-            info.title(),
-            realUpdates
-        );
+        List<LinkUpdateEvent> realUpdates = info.events().stream()
+                .filter(event -> event.lastModified().isAfter(after))
+                .toList();
+        return new LinkInformation(info.url(), info.title(), realUpdates);
     }
 }

@@ -32,18 +32,15 @@ public class LinkController {
     @Operation(summary = "Добавить отслеживание ссылки")
     @PostMapping
     public LinkResponse addLink(
-        @RequestHeader(name = "Tg-Chat-Id") Long tgChatId,
-        @RequestBody @Valid AddLinkRequest addLinkRequest
-    ) {
+            @RequestHeader(name = "Tg-Chat-Id") Long tgChatId, @RequestBody @Valid AddLinkRequest addLinkRequest) {
         return linkService.addLink(addLinkRequest.link(), tgChatId);
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
     @DeleteMapping
     public LinkResponse removeLink(
-        @RequestHeader(name = "Tg-Chat-Id") Long tgChatId,
-        @RequestBody @Valid RemoveLinkRequest removeLinkRequest
-    ) {
+            @RequestHeader(name = "Tg-Chat-Id") Long tgChatId,
+            @RequestBody @Valid RemoveLinkRequest removeLinkRequest) {
         return linkService.removeLink(removeLinkRequest.link(), tgChatId);
     }
 }

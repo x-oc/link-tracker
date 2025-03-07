@@ -1,9 +1,10 @@
 package backend.academy.bot.stateMachine;
+
 import backend.academy.bot.model.Link;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component

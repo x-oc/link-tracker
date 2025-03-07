@@ -1,11 +1,11 @@
 package backend.academy.scrapper.config;
 
 import backend.academy.scrapper.api.InformationProvider;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor

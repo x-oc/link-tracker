@@ -1,9 +1,9 @@
 package backend.academy.bot.command;
 
 import backend.academy.bot.model.CommandArguments;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -24,11 +24,10 @@ public class HelpCommand implements Command {
     @Override
     public String handle(CommandArguments arguments) {
         StringBuilder sb = new StringBuilder("Sure! Here's the list of available commands: \n ");
-        commands.forEach(command -> sb
-            .append(command.command())
-            .append(" ")
-            .append(command.description())
-            .append("\n "));
+        commands.forEach(command -> sb.append(command.command())
+                .append(" ")
+                .append(command.description())
+                .append("\n "));
         return sb.toString();
     }
 }

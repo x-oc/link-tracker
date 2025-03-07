@@ -26,13 +26,9 @@ public interface ScrapperClient {
 
     @PostExchange("/links")
     OptionalAnswer<LinkResponse> addLink(
-        @RequestHeader("Tg-Chat-Id") Long tgChatId,
-        @RequestBody AddLinkRequest addLinkRequest
-    );
+            @RequestHeader("Tg-Chat-Id") Long tgChatId, @RequestBody AddLinkRequest addLinkRequest);
 
     @DeleteExchange("/links")
     OptionalAnswer<LinkResponse> removeLink(
-        @RequestHeader("Tg-Chat-Id") Long tgChatId,
-        @RequestBody RemoveLinkRequest removeLinkRequest
-    );
+            @RequestHeader("Tg-Chat-Id") Long tgChatId, @RequestBody RemoveLinkRequest removeLinkRequest);
 }

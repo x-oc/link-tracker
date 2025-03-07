@@ -16,8 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableScheduling
-@OpenAPIDefinition(info = @Info(title = "Scrapper API",
-    description = "Scrapper API", version = "1.0.0"))
+@OpenAPIDefinition(info = @Info(title = "Scrapper API", description = "Scrapper API", version = "1.0.0"))
 public class ClientConfig {
 
     @Value("${bot.url}")
@@ -26,13 +25,14 @@ public class ClientConfig {
     @Bean
     public BotClient botClient() {
         WebClient webClient = WebClient.builder()
-            .defaultStatusHandler(httpStatusCode -> true, clientResponse -> Mono.empty())
-            .defaultHeader("Content-Type", "application/json")
-            .baseUrl(botUrl).build();
+                .defaultStatusHandler(httpStatusCode -> true, clientResponse -> Mono.empty())
+                .defaultHeader("Content-Type", "application/json")
+                .baseUrl(botUrl)
+                .build();
 
-        HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
-            .builderFor(WebClientAdapter.create(webClient))
-            .build();
+        HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory.builderFor(
+                        WebClientAdapter.create(webClient))
+                .build();
         return httpServiceProxyFactory.createClient(BotClient.class);
     }
 

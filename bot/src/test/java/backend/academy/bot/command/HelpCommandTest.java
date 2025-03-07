@@ -1,7 +1,7 @@
 package backend.academy.bot.command;
 
-import java.util.List;
 import backend.academy.bot.model.CommandArguments;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ public class HelpCommandTest {
         HelpCommand command = new HelpCommand(List.of(createMockCommand()));
         CommandArguments arguments = new CommandArguments("", 1L);
         Assertions.assertThat(command.handle(arguments))
-            .isEqualTo("Sure! Here's the list of available commands: \n /mock mock description\n ");
+                .isEqualTo("Sure! Here's the list of available commands: \n /mock mock description\n ");
     }
 
     private Command createMockCommand() {

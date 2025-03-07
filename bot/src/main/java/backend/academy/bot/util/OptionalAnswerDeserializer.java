@@ -26,7 +26,7 @@ public class OptionalAnswerDeserializer extends JsonDeserializer<OptionalAnswer<
 
     @Override
     public OptionalAnswer<?> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-        throws IOException {
+            throws IOException {
         ObjectMapper mapper = (ObjectMapper) jsonParser.getCodec();
         ObjectNode objectNode = mapper.readTree(jsonParser);
         if (objectNode.get("exceptionName") != null) {

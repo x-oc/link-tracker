@@ -5,9 +5,4 @@ import java.util.Map;
 import lombok.Builder;
 
 @Builder
-public record LinkUpdateEvent(
-    String type,
-    OffsetDateTime lastModified,
-    Map<String, String> additionalData
-) {
-}
+public record LinkUpdateEvent(String type, OffsetDateTime lastModified, Map<String, String> additionalData) {}

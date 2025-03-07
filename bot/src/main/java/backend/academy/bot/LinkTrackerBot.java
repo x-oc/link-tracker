@@ -7,10 +7,10 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -28,9 +28,10 @@ public class LinkTrackerBot {
     private int listenRequests(List<Update> updates) {
         updates.forEach(update -> {
             if (update.message() != null) {
-                log.atInfo().setMessage("Processing new message.")
-                    .addKeyValue("message", update.message())
-                    .log();
+                log.atInfo()
+                        .setMessage("Processing new message.")
+                        .addKeyValue("message", update.message())
+                        .log();
                 SendMessage sendMessage = messageHandler.handle(update);
                 if (sendMessage != null) {
                     bot.execute(sendMessage);
@@ -42,8 +43,11 @@ public class LinkTrackerBot {
 
     private void handleError(TelegramException e) {
         if (e.response() != null) {
-            e.response().errorCode();
-            e.response().description();
+            log.atError()
+                    .setCause(e)
+                    .addKeyValue("errorCode", e.response().errorCode())
+                    .addKeyValue("description", e.response().description())
+                    .log();
         } else {
             log.atError().setCause(e).log();
         }

@@ -1,13 +1,13 @@
 package backend.academy.scrapper.repository;
 
 import backend.academy.scrapper.model.Link;
-import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 @Component
 public class InMemoryLinkRepository implements LinkRepository {
@@ -24,12 +24,12 @@ public class InMemoryLinkRepository implements LinkRepository {
     @Override
     public long add(Link link) {
         Optional<Link> alreadyExisting = findByUrl(link.url());
-        if (alreadyExisting.isPresent()) {
-            return alreadyExisting.get().id();
+        if (alreadyExisting.isEmpty()) {
+            link.id(nextId++);
+            links.add(link);
+            return link.id();
         }
-        link.id(nextId++);
-        links.add(link);
-        return link.id();
+        return alreadyExisting.orElseThrow().id();
     }
 
     @Override

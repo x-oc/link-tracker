@@ -1,5 +1,7 @@
 package backend.academy.scrapper.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import backend.academy.scrapper.dto.request.AddLinkRequest;
 import backend.academy.scrapper.dto.request.RemoveLinkRequest;
 import backend.academy.scrapper.dto.response.ApiErrorResponse;
@@ -24,7 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LinkController.class)
 @Import(LinkControllerTest.TestConfig.class)
@@ -55,70 +56,62 @@ public class LinkControllerTest {
     @DisplayName("Тестирование LinkController#listLinks")
     public void listLinksShouldWorkCorrectly() throws Exception {
         Mockito.when(linkService.listLinks(chatId))
-            .thenReturn(new ListLinksResponse(List.of(
-                new LinkResponse(chatId, URI.create("http://localhost"), null, null)), 1));
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .get("/links")
-                .header("Tg-Chat-Id", chatId)
-                .contentType("application/json")
-        ).andExpect(status().isOk()).andExpect(
-            result -> Assertions.assertThat(result.getResponse().getContentAsString())
-                .isEqualTo(("{\"links\":[{\"id\":%s,\"url\":\"http://localhost\"," +
-                    "\"tags\":null,\"filters\":null}],\"size\":1}").formatted(chatId))
-        );
+                .thenReturn(new ListLinksResponse(
+                        List.of(new LinkResponse(chatId, URI.create("http://localhost"), null, null)), 1));
+        mockMvc.perform(MockMvcRequestBuilders.get("/links")
+                        .header("Tg-Chat-Id", chatId)
+                        .contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(result -> Assertions.assertThat(result.getResponse().getContentAsString())
+                        .isEqualTo(("{\"links\":[{\"id\":%s,\"url\":\"http://localhost\","
+                                        + "\"tags\":null,\"filters\":null}],\"size\":1}")
+                                .formatted(chatId)));
         Mockito.verify(linkService).listLinks(chatId);
     }
 
     @Test
     @DisplayName("Тестирование LinkController#listLinks с отсутвующим чатом")
     public void listLinksShouldReturnErrorWhenChatIsMissing() throws Exception {
-        Mockito.when(linkService.listLinks(chatId))
-            .thenThrow(new ChatNotFoundException(chatId));
-        var result = mockMvc.perform(
-            MockMvcRequestBuilders
-                .get("/links")
-                .contentType("application/json")
-                .header("Tg-Chat-Id", chatId)
-        ).andExpect(status().isNotFound()).andReturn();
+        Mockito.when(linkService.listLinks(chatId)).thenThrow(new ChatNotFoundException(chatId));
+        var result = mockMvc.perform(MockMvcRequestBuilders.get("/links")
+                        .contentType("application/json")
+                        .header("Tg-Chat-Id", chatId))
+                .andExpect(status().isNotFound())
+                .andReturn();
 
         ApiErrorResponse error =
-            objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
-        Assertions.assertThat(error).extracting("code", "exceptionName")
-            .contains("404", "ChatNotFoundException");
+                objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
+        Assertions.assertThat(error).extracting("code", "exceptionName").contains("404", "ChatNotFoundException");
     }
 
     @Test
     @DisplayName("Тестирование LinkController#listLinks без заголовка Tg-Chat-Id")
     public void listLinksShouldReturnErrorWhenTgChatIdIsMissing() throws Exception {
-        var result = mockMvc.perform(
-            MockMvcRequestBuilders
-                .get("/links")
-                .contentType("application/json")
-        ).andExpect(status().isBadRequest()).andReturn();
+        var result = mockMvc.perform(MockMvcRequestBuilders.get("/links").contentType("application/json"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
 
         ApiErrorResponse error =
-            objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
-        Assertions.assertThat(error).extracting("code", "exceptionName")
-            .contains("400", "MissingRequestHeaderException");
+                objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
+        Assertions.assertThat(error)
+                .extracting("code", "exceptionName")
+                .contains("400", "MissingRequestHeaderException");
     }
 
     @Test
     @DisplayName("Тестирование LinkController#addLink")
     public void addLinkShouldWorkCorrectly() throws Exception {
         Mockito.when(linkService.addLink(URI.create("http://localhost"), chatId))
-            .thenReturn(new LinkResponse(chatId, URI.create("http://localhost"), null, null));
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/links")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(
-                    new AddLinkRequest(URI.create("http://localhost"), null, null)))
-                .header("Tg-Chat-Id", chatId)
-        ).andExpect(status().isOk()).andExpect(
-            result -> Assertions.assertThat(result.getResponse().getContentAsString())
-                .isEqualTo("{\"id\":%s,\"url\":\"http://localhost\",\"tags\":null,\"filters\":null}".formatted(chatId))
-        );
+                .thenReturn(new LinkResponse(chatId, URI.create("http://localhost"), null, null));
+        mockMvc.perform(MockMvcRequestBuilders.post("/links")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(
+                                new AddLinkRequest(URI.create("http://localhost"), null, null)))
+                        .header("Tg-Chat-Id", chatId))
+                .andExpect(status().isOk())
+                .andExpect(result -> Assertions.assertThat(result.getResponse().getContentAsString())
+                        .isEqualTo("{\"id\":%s,\"url\":\"http://localhost\",\"tags\":null,\"filters\":null}"
+                                .formatted(chatId)));
 
         Mockito.verify(linkService).addLink(URI.create("http://localhost"), chatId);
     }
@@ -126,51 +119,47 @@ public class LinkControllerTest {
     @Test
     @DisplayName("Тестирование LinkController#addLink с неверными данными")
     public void addLinkShouldReturnErrorWhenDataIsInvalid() throws Exception {
-        var result = mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/links")
-                .contentType("application/json")
-                .content("{}")
-                .header("Tg-Chat-Id", chatId)
-        ).andExpect(status().isBadRequest()).andReturn();
+        var result = mockMvc.perform(MockMvcRequestBuilders.post("/links")
+                        .contentType("application/json")
+                        .content("{}")
+                        .header("Tg-Chat-Id", chatId))
+                .andExpect(status().isBadRequest())
+                .andReturn();
 
         ApiErrorResponse error =
-            objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
-        Assertions.assertThat(error).extracting("code", "exceptionName")
-            .contains("400", "MethodArgumentNotValidException");
+                objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
+        Assertions.assertThat(error)
+                .extracting("code", "exceptionName")
+                .contains("400", "MethodArgumentNotValidException");
     }
 
     @Test
     @DisplayName("Тестирование LinkController#addLink с неподдерживаемой ссылкой")
     public void addLinkShouldReturnErrorWhenLinkIsNotSupported() throws Exception {
         Mockito.when(linkService.addLink(URI.create("http://localhost"), chatId))
-            .thenThrow(new LinkNotSupportedException("http://localhost"));
-        var result = mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/links")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(
-                    new AddLinkRequest(URI.create("http://localhost"), null, null)))
-                .header("Tg-Chat-Id", chatId)
-        ).andExpect(status().isBadRequest()).andReturn();
+                .thenThrow(new LinkNotSupportedException("http://localhost"));
+        var result = mockMvc.perform(MockMvcRequestBuilders.post("/links")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(
+                                new AddLinkRequest(URI.create("http://localhost"), null, null)))
+                        .header("Tg-Chat-Id", chatId))
+                .andExpect(status().isBadRequest())
+                .andReturn();
 
         ApiErrorResponse error =
-            objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
-        Assertions.assertThat(error).extracting("code", "exceptionName")
-            .contains("400", "LinkNotSupportedException");
+                objectMapper.readValue(result.getResponse().getContentAsString(), ApiErrorResponse.class);
+        Assertions.assertThat(error).extracting("code", "exceptionName").contains("400", "LinkNotSupportedException");
     }
 
     @Test
     @DisplayName("Тестирование LinkController#removeLink")
     public void removeLinkShouldWorkCorrectly() throws Exception {
         URI url = URI.create("http://localhost");
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .delete("/links")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(new RemoveLinkRequest(url)))
-                .header("Tg-Chat-Id", chatId)
-        ).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.delete("/links")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(new RemoveLinkRequest(url)))
+                        .header("Tg-Chat-Id", chatId))
+                .andExpect(status().isOk());
 
         Mockito.verify(linkService).removeLink(url, chatId);
     }

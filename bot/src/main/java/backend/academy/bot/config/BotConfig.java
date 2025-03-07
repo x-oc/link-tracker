@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @RequiredArgsConstructor
 @Configuration
-@OpenAPIDefinition(info = @Info(title = "Bot API",
-    description = "Bot API", version = "1.0.0"))
+@OpenAPIDefinition(info = @Info(title = "Bot API", description = "Bot API", version = "1.0.0"))
 public class BotConfig {
 
     private final ApplicationConfig applicationConfig;

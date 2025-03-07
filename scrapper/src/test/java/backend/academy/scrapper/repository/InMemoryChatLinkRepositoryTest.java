@@ -1,11 +1,11 @@
 package backend.academy.scrapper.repository;
 
 import backend.academy.scrapper.model.Link;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.util.List;
 
 public class InMemoryChatLinkRepositoryTest {
 

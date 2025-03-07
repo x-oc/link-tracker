@@ -4,12 +4,14 @@ import backend.academy.bot.client.ScrapperClient;
 import backend.academy.bot.dto.request.AddLinkRequest;
 import backend.academy.bot.dto.request.RemoveLinkRequest;
 import backend.academy.bot.model.Link;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RemoteLinksStorage implements LinksStorage {
@@ -17,28 +19,46 @@ public class RemoteLinksStorage implements LinksStorage {
     private final ScrapperClient scrapperClient;
 
     @Override
-    public String registerUser(Long id) {
-        var response = scrapperClient.registerChat(id);
+    public String registerUser(Long chatId) {
+        var response = scrapperClient.registerChat(chatId);
         if (response.getStatusCode().isError()) {
-            return response.getBody().toString();
+            log.atWarn()
+                    .setMessage("Error response while trying to register user.")
+                    .addKeyValue("statusCode", response.getStatusCode())
+                    .addKeyValue("message", response.getBody())
+                    .addKeyValue("chatId", chatId)
+                    .log();
+            return Responses.REGISTER_USER_FAIL.message;
         }
         return Responses.REGISTER_USER_SUCCESS.message;
     }
 
     @Override
-    public String addUserLink (Long userId, String url, List<String> tags, List<String> filters) {
-        var response = scrapperClient.addLink(userId, new AddLinkRequest(URI.create(url), tags, filters));
+    public String addUserLink(Long chatId, String url, List<String> tags, List<String> filters) {
+        var response = scrapperClient.addLink(chatId, new AddLinkRequest(URI.create(url), tags, filters));
         if (response.isError()) {
+            log.atWarn()
+                    .setMessage("Error response while trying to add user link.")
+                    .addKeyValue("statusCode", response.apiErrorResponse().code())
+                    .addKeyValue("message", response.apiErrorResponse().exceptionMessage())
+                    .addKeyValue("chatId", chatId)
+                    .log();
             return response.apiErrorResponse().description();
         }
         return Responses.ADD_USER_LINK_SUCCESS.message;
     }
 
     @Override
-    public String removeUserLink(Long userId, String url) {
+    public String removeUserLink(Long chatId, String url) {
         try {
-            var response = scrapperClient.removeLink(userId, new RemoveLinkRequest(URI.create(url)));
+            var response = scrapperClient.removeLink(chatId, new RemoveLinkRequest(URI.create(url)));
             if (response.isError()) {
+                log.atWarn()
+                        .setMessage("Error response while trying to remove user link.")
+                        .addKeyValue("statusCode", response.apiErrorResponse().code())
+                        .addKeyValue("message", response.apiErrorResponse().exceptionMessage())
+                        .addKeyValue("chatId", chatId)
+                        .log();
                 return response.apiErrorResponse().description();
             }
             return Responses.REMOVE_USER_LINK_SUCCESS.message;
@@ -48,11 +68,15 @@ public class RemoteLinksStorage implements LinksStorage {
     }
 
     @Override
-    public List<Link> getLinks(Long userId) {
-        var response = scrapperClient.listLinks(userId).answer();
+    public List<Link> getLinks(Long chatId) {
+        var response = scrapperClient.listLinks(chatId).answer();
         var linkDTOs = response.links();
         List<Link> links = new ArrayList<>();
         if (linkDTOs == null) {
+            log.atWarn()
+                    .setMessage("Error response while trying get user link.")
+                    .addKeyValue("chatId", chatId)
+                    .log();
             return links;
         }
         for (var link : linkDTOs) {

@@ -25,9 +25,10 @@ public class ChatService {
             throw new ChatAlreadyRegisteredException(chatId);
         }
         chatRepository.add(chatId);
-        log.atInfo().setMessage("Registered new chat.")
-            .addKeyValue("chatId", chatId)
-            .log();
+        log.atInfo()
+                .setMessage("Registered new chat.")
+                .addKeyValue("chatId", chatId)
+                .log();
     }
 
     @Transactional
@@ -43,8 +44,6 @@ public class ChatService {
             }
         });
         chatRepository.remove(chatId);
-        log.atInfo().setMessage("Deleted chat.")
-            .addKeyValue("chatId", chatId)
-            .log();
+        log.atInfo().setMessage("Deleted chat.").addKeyValue("chatId", chatId).log();
     }
 }

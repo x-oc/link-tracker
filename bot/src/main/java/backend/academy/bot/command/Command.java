@@ -9,5 +9,4 @@ public interface Command {
     String description();
 
     String handle(CommandArguments arguments);
-
 }
