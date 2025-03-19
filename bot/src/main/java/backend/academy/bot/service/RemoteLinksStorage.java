@@ -4,6 +4,7 @@ import backend.academy.bot.client.ScrapperClient;
 import backend.academy.bot.dto.request.AddLinkRequest;
 import backend.academy.bot.dto.request.RemoveLinkRequest;
 import backend.academy.bot.model.Link;
+import backend.academy.bot.response.BotResponses;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,9 @@ public class RemoteLinksStorage implements LinksStorage {
                     .addKeyValue("message", response.getBody())
                     .addKeyValue("chatId", chatId)
                     .log();
-            return Responses.REGISTER_USER_FAIL.message;
+            return BotResponses.REGISTER_USER_FAIL.message;
         }
-        return Responses.REGISTER_USER_SUCCESS.message;
+        return BotResponses.REGISTER_USER_SUCCESS.message;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class RemoteLinksStorage implements LinksStorage {
                     .log();
             return response.apiErrorResponse().description();
         }
-        return Responses.ADD_USER_LINK_SUCCESS.message;
+        return BotResponses.ADD_USER_LINK_SUCCESS.message;
     }
 
     @Override
@@ -61,9 +62,9 @@ public class RemoteLinksStorage implements LinksStorage {
                         .log();
                 return response.apiErrorResponse().description();
             }
-            return Responses.REMOVE_USER_LINK_SUCCESS.message;
+            return BotResponses.REMOVE_USER_LINK_SUCCESS.message;
         } catch (IllegalArgumentException e) {
-            return Responses.REMOVE_USER_LINK_FAIL.message;
+            return BotResponses.REMOVE_USER_LINK_FAIL.message;
         }
     }
 

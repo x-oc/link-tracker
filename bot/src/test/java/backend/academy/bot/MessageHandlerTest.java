@@ -31,6 +31,7 @@ public class MessageHandlerTest {
     @BeforeEach
     public void setUp() {
         handler = new MessageHandler(List.of(createMockCommand()), userStateStorage, userStateHandler);
+        handler.initCommandMap();
     }
 
     @DisplayName("Тестирование метода handle с корректными командой и сообщением")

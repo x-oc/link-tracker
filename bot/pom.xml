@@ -125,19 +125,6 @@
         <!--        </dependency>-->
     </dependencies>
 
-    <!--    <build>-->
-    <!--        <plugins>-->
-    <!--            <plugin>-->
-    <!--                <groupId>org.apache.maven.plugins</groupId>-->
-    <!--                <artifactId>maven-compiler-plugin</artifactId>-->
-    <!--            </plugin>-->
-    <!--            &lt;!&ndash; To build OCI image: https://docs.spring.io/spring-boot/maven-plugin/build-image.html &ndash;&gt;-->
-    <!--            <plugin>-->
-    <!--                <groupId>org.springframework.boot</groupId>-->
-    <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-    <!--            </plugin>-->
-    <!--        </plugins>-->
-    <!--    </build>-->
     <build>
         <plugins>
             <plugin>

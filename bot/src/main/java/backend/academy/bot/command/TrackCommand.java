@@ -2,9 +2,11 @@ package backend.academy.bot.command;
 
 import backend.academy.bot.model.CommandArguments;
 import backend.academy.bot.model.Link;
+import backend.academy.bot.response.BotResponses;
 import backend.academy.bot.service.LinksStorage;
 import backend.academy.bot.stateMachine.UserState;
 import backend.academy.bot.stateMachine.UserStateStorage;
+import backend.academy.bot.validator.LinkValidator;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -31,26 +33,30 @@ public class TrackCommand implements Command {
     @Override
     public String handle(CommandArguments arguments) {
         UserState userState = stateStorage.getUserState(arguments.chatId());
-        if (userState == UserState.AWAITING_FILTERS) {
-            return handleAddFilters(arguments);
-        }
-        if (userState == UserState.AWAITING_TAGS) {
-            return handleAddTags(arguments);
-        }
-        if (!arguments.userArguments().matches(Link.URL_PATTERN)) {
+        return switch (userState) {
+            case AWAITING_FILTERS -> handleAddFilters(arguments);
+            case AWAITING_TAGS -> handleAddTags(arguments);
+            case null -> trackNewLink(arguments);
+        };
+    }
+
+    private String trackNewLink(CommandArguments arguments) {
+        Link link = new Link(arguments.userArguments());
+
+        if (!LinkValidator.isValid(link)) {
             return "Invalid link";
         }
         String response = linksStorage.addUserLink(arguments.chatId(), arguments.userArguments(), null, null);
-        if (!response.equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message)) {
+        if (!response.equals(BotResponses.ADD_USER_LINK_SUCCESS.message)) {
             return response;
         }
 
         stateStorage.setUserState(arguments.chatId(), UserState.AWAITING_TAGS);
-        stateStorage.setLastLink(arguments.chatId(), new Link(arguments.userArguments()));
+        stateStorage.setLastLink(arguments.chatId(), link);
         return "Enter tags for the link, please (or 'none' to skip): ";
     }
 
-    public String handleAddTags(CommandArguments arguments) {
+    private String handleAddTags(CommandArguments arguments) {
         List<String> tags = Arrays.stream(arguments.userArguments().split(" +")).toList();
         Link lastLink = stateStorage.getLastLink(arguments.chatId());
         if (lastLink == null) {
@@ -65,10 +71,10 @@ public class TrackCommand implements Command {
         if (!Objects.equals(tags.getFirst().toLowerCase(), "none")) {
             result &= linksStorage
                     .removeUserLink(arguments.chatId(), lastLink.url())
-                    .equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message);
+                    .equals(BotResponses.REMOVE_USER_LINK_SUCCESS.message);
             result &= linksStorage
                     .addUserLink(arguments.chatId(), lastLink.url(), tags, null)
-                    .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message);
+                    .equals(BotResponses.ADD_USER_LINK_SUCCESS.message);
         }
         if (!result) {
             stateStorage.clearUserState(arguments.chatId());
@@ -78,7 +84,7 @@ public class TrackCommand implements Command {
         return "Now enter filters, please (or 'none'): ";
     }
 
-    public String handleAddFilters(CommandArguments arguments) {
+    private String handleAddFilters(CommandArguments arguments) {
         List<String> filters =
                 Arrays.stream(arguments.userArguments().split(" +")).toList();
         Link lastLink = stateStorage.getLastLink(arguments.chatId());
@@ -92,10 +98,10 @@ public class TrackCommand implements Command {
         if (!Objects.equals(filters.getFirst().toLowerCase(), "none")) {
             result &= linksStorage
                     .removeUserLink(arguments.chatId(), lastLink.url())
-                    .equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message);
+                    .equals(BotResponses.REMOVE_USER_LINK_SUCCESS.message);
             result &= linksStorage
                     .addUserLink(arguments.chatId(), lastLink.url(), lastLink.tags(), filters)
-                    .equals(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message);
+                    .equals(BotResponses.ADD_USER_LINK_SUCCESS.message);
         }
         stateStorage.clearUserState(arguments.chatId());
         if (!result) {

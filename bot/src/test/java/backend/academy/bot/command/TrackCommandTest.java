@@ -3,6 +3,7 @@ package backend.academy.bot.command;
 import backend.academy.bot.TestApplication;
 import backend.academy.bot.model.CommandArguments;
 import backend.academy.bot.model.Link;
+import backend.academy.bot.response.BotResponses;
 import backend.academy.bot.service.LinksStorage;
 import backend.academy.bot.service.RemoteLinksStorage;
 import backend.academy.bot.stateMachine.UserState;
@@ -42,7 +43,7 @@ public class TrackCommandTest {
     public void handleShouldTrackLink() {
         String url = "https://github.com/user/repo";
         Mockito.when(mockLinksStorage.addUserLink(chatId, url, null, null))
-                .thenReturn(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message);
+                .thenReturn(BotResponses.ADD_USER_LINK_SUCCESS.message);
         UserStateStorage spiedStateStorage = Mockito.spy(stateStorage);
         TrackCommand command = new TrackCommand(mockLinksStorage, spiedStateStorage);
 
@@ -81,10 +82,10 @@ public class TrackCommandTest {
     public void handleShouldAddTags() {
         String url = "https://github.com/user/repo";
         Mockito.when(mockLinksStorage.removeUserLink(chatId, url))
-                .thenReturn(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message);
+                .thenReturn(BotResponses.REMOVE_USER_LINK_SUCCESS.message);
         List<String> tags = List.of("tag1", "tag2");
         Mockito.when(mockLinksStorage.addUserLink(chatId, url, tags, null))
-                .thenReturn(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message);
+                .thenReturn(BotResponses.ADD_USER_LINK_SUCCESS.message);
 
         UserStateStorage mockUserStateStorage = Mockito.mock(UserStateStorage.class);
         Mockito.when(mockUserStateStorage.getUserState(chatId)).thenReturn(UserState.AWAITING_TAGS);
@@ -105,11 +106,11 @@ public class TrackCommandTest {
     public void handleShouldAddFilters() {
         String url = "https://github.com/user/repo";
         Mockito.when(mockLinksStorage.removeUserLink(chatId, url))
-                .thenReturn(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message);
+                .thenReturn(BotResponses.REMOVE_USER_LINK_SUCCESS.message);
         List<String> filters = List.of("filter1", "filter2");
         List<String> tags = List.of("tag1", "tag2");
         Mockito.when(mockLinksStorage.addUserLink(chatId, url, tags, filters))
-                .thenReturn(LinksStorage.Responses.ADD_USER_LINK_SUCCESS.message);
+                .thenReturn(BotResponses.ADD_USER_LINK_SUCCESS.message);
 
         UserStateStorage mockUserStateStorage = Mockito.mock(UserStateStorage.class);
         Mockito.when(mockUserStateStorage.getUserState(chatId)).thenReturn(UserState.AWAITING_FILTERS);

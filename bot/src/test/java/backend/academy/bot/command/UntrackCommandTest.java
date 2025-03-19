@@ -2,6 +2,7 @@ package backend.academy.bot.command;
 
 import backend.academy.bot.client.ScrapperClient;
 import backend.academy.bot.model.CommandArguments;
+import backend.academy.bot.response.BotResponses;
 import backend.academy.bot.service.LinksStorage;
 import backend.academy.bot.service.RemoteLinksStorage;
 import org.assertj.core.api.Assertions;
@@ -19,7 +20,7 @@ public class UntrackCommandTest {
         UntrackCommand command = new UntrackCommand(spiedLinksStorage);
 
         Assertions.assertThat(command.handle(new CommandArguments("not even a link", 1L)))
-                .isEqualTo(LinksStorage.Responses.REMOVE_USER_LINK_FAIL.message);
+                .isEqualTo(BotResponses.REMOVE_USER_LINK_FAIL.message);
         Mockito.verify(spiedLinksStorage, Mockito.times(1)).removeUserLink(1L, "not even a link");
     }
 
@@ -29,7 +30,7 @@ public class UntrackCommandTest {
         String url = "https://github.com/user/repo";
         LinksStorage mockedLinksStorage = Mockito.mock(RemoteLinksStorage.class);
         Mockito.when(mockedLinksStorage.removeUserLink(1L, url))
-                .thenReturn(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message);
+                .thenReturn(BotResponses.REMOVE_USER_LINK_SUCCESS.message);
         UntrackCommand command = new UntrackCommand(mockedLinksStorage);
 
         Assertions.assertThat(command.handle(new CommandArguments(url, 1L)))

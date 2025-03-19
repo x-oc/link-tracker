@@ -1,6 +1,7 @@
 package backend.academy.bot.command;
 
 import backend.academy.bot.model.CommandArguments;
+import backend.academy.bot.response.BotResponses;
 import backend.academy.bot.service.LinksStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class UntrackCommand implements Command {
     @Override
     public String handle(CommandArguments arguments) {
         String response = linksStorage.removeUserLink(arguments.chatId(), arguments.userArguments());
-        if (!response.equals(LinksStorage.Responses.REMOVE_USER_LINK_SUCCESS.message)) {
+        if (!response.equals(BotResponses.REMOVE_USER_LINK_SUCCESS.message)) {
             return response;
         }
         return String.format(

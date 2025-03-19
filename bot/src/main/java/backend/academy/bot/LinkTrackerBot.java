@@ -3,8 +3,10 @@ package backend.academy.bot;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SetMyCommands;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.util.List;
@@ -22,6 +24,10 @@ public class LinkTrackerBot {
 
     @PostConstruct
     public void start() {
+        bot.execute(new SetMyCommands(messageHandler.commands().stream()
+                .map(command -> new BotCommand(command.command(), command.description()))
+                .toList()
+                .toArray(new BotCommand[0])));
         bot.setUpdatesListener(this::listenRequests, this::handleError);
     }
 
