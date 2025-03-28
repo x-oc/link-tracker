@@ -10,11 +10,23 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+  config:
+    import: optional:file:./application.env
 
 server:
-  port: 8080
+  port: 8090
+
+scrapper:
+  url: ${SCRAPPER_URL:http://localhost:8081}
 
 springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui
+
+logging:
+  structured:
+    format:
+      console: ecs
+  file:
+    name: log.json

@@ -1,0 +1,94 @@
+[
+    {
+        "id": "47156321573",
+        "type": "PushEvent",
+        "actor": {
+            "id": 180064861,
+            "login": "x-oc",
+            "display_login": "x-oc",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/x-oc",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?"
+        },
+        "repo": {
+            "id": 939445316,
+            "name": "x-oc/slae-solutions",
+            "url": "https://api.github.com/repos/x-oc/slae-solutions"
+        },
+        "payload": {
+            "repository_id": 939445316,
+            "push_id": 22963197283,
+            "size": 1,
+            "distinct_size": 1,
+            "ref": "refs/heads/main",
+            "head": "61d282a809d283e288a1fac04ca1e92875559b83",
+            "before": "2df7495643ccc3e1ff10cfca20825bf49ca48468",
+            "commits": [
+                {
+                    "sha": "61d282a809d283e288a1fac04ca1e92875559b83",
+                    "author": {
+                        "email": "vovaess@gmail.com",
+                        "name": "x-oc"
+                    },
+                    "message": "Create README.md",
+                    "distinct": true,
+                    "url": "https://api.github.com/repos/x-oc/slae-solutions/commits/61d282a809d283e288a1fac04ca1e92875559b83"
+                }
+            ]
+        },
+        "public": true,
+        "created_at": "2025-03-03T22:08:32Z"
+    },
+    {
+        "id": "46985412042",
+        "type": "CreateEvent",
+        "actor": {
+            "id": 180064861,
+            "login": "x-oc",
+            "display_login": "x-oc",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/x-oc",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?"
+        },
+        "repo": {
+            "id": 939445316,
+            "name": "x-oc/slae-solutions",
+            "url": "https://api.github.com/repos/x-oc/slae-solutions"
+        },
+        "payload": {
+            "ref": "main",
+            "ref_type": "branch",
+            "master_branch": "main",
+            "description": "Программа Python для решения систем линейных алгебраических уравнений методом простых итераций.",
+            "pusher_type": "user"
+        },
+        "public": true,
+        "created_at": "2025-02-26T14:55:46Z"
+    },
+    {
+        "id": "46985369460",
+        "type": "CreateEvent",
+        "actor": {
+            "id": 180064861,
+            "login": "x-oc",
+            "display_login": "x-oc",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/x-oc",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?"
+        },
+        "repo": {
+            "id": 939445316,
+            "name": "x-oc/slae-solutions",
+            "url": "https://api.github.com/repos/x-oc/slae-solutions"
+        },
+        "payload": {
+            "ref": null,
+            "ref_type": "repository",
+            "master_branch": "main",
+            "description": "Программа Python для решения систем линейных алгебраических уравнений методом простых итераций.",
+            "pusher_type": "user"
+        },
+        "public": true,
+        "created_at": "2025-02-26T14:54:52Z"
+    }
+]
