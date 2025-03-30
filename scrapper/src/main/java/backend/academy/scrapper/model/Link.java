@@ -31,4 +31,21 @@ public class Link {
         this.lastChecked = lastChecked;
         this.lastUpdated = lastUpdated;
     }
+
+    public Link(
+            long id,
+            String url,
+            List<String> tags,
+            List<String> filters,
+            OffsetDateTime lastChecked,
+            OffsetDateTime lastUpdated,
+            String metaInformation) {
+        this.id = id;
+        this.url = url;
+        this.tags = tags;
+        this.filters = filters;
+        this.lastChecked = lastChecked;
+        this.lastUpdated = lastUpdated;
+        this.metaInformation = metaInformation;
+    }
 }

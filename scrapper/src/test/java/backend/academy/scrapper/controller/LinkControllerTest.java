@@ -161,7 +161,7 @@ public class LinkControllerTest {
                         .header("Tg-Chat-Id", chatId))
                 .andExpect(status().isOk());
 
-        Mockito.verify(linkService).removeLink(url, chatId);
+        Mockito.verify(linkService).removeLink(url.toString(), chatId);
     }
 
     @TestConfiguration

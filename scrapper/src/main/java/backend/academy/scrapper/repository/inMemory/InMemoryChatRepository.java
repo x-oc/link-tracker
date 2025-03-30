@@ -1,11 +1,10 @@
-package backend.academy.scrapper.repository;
+package backend.academy.scrapper.repository.inMemory;
 
+import backend.academy.scrapper.repository.TgChatRepository;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.springframework.stereotype.Component;
 
-@Component
 public class InMemoryChatRepository implements TgChatRepository {
 
     private final Set<Long> chatIds = new HashSet<>();

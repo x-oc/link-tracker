@@ -50,7 +50,10 @@ class LinkUpdateSchedulerTest {
         MockitoAnnotations.openMocks(this);
 
         ScrapperConfig config = new ScrapperConfig(
-                null, null, new ScrapperConfig.Scheduler(true, Duration.ofSeconds(100), Duration.ofMillis(100), 10));
+                null,
+                null,
+                new ScrapperConfig.Scheduler(true, Duration.ofSeconds(100), Duration.ofMillis(100), 10),
+                null);
         linkUpdateScheduler = new LinkUpdateScheduler(linkService, config, providers, sender);
     }
 
@@ -58,7 +61,7 @@ class LinkUpdateSchedulerTest {
     @DisplayName("Проверка, что обновления отправляются только подписчикам ссылки")
     public void updateShouldSendUpdatesOnlyToLinkSubscribers() {
         when(linkService.listOldLinks(Duration.ofMillis(100), 10)).thenReturn(List.of(link));
-        when(linkService.getLinkSubscribers(url)).thenReturn(List.of(1L, 2L));
+        when(linkService.getLinkSubscribers(1)).thenReturn(List.of(1L, 2L));
 
         InformationProvider provider = mock(InformationProvider.class);
         when(providers.get("github.com")).thenReturn(provider);

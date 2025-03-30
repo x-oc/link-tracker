@@ -41,6 +41,6 @@ public class LinkController {
     public LinkResponse removeLink(
             @RequestHeader(name = "Tg-Chat-Id") Long tgChatId,
             @RequestBody @Valid RemoveLinkRequest removeLinkRequest) {
-        return linkService.removeLink(removeLinkRequest.link(), tgChatId);
+        return linkService.removeLink(removeLinkRequest.link().toString(), tgChatId);
     }
 }

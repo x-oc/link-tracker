@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 public class StackOverflowProviderTest {
 
     private static StackOverflowProvider provider;
-    private static final ScrapperConfig EMPTY_CONFIG = new ScrapperConfig(null, null, null);
+    private static final ScrapperConfig EMPTY_CONFIG = new ScrapperConfig(null, null, null, null);
 
     @BeforeAll
     public static void setUp() {

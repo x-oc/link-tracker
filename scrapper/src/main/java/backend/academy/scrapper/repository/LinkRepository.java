@@ -18,8 +18,6 @@ public interface LinkRepository {
 
     List<Link> findByTag(String tag);
 
-    List<Link> findByFilter(String filter);
-
     List<Link> findLinksCheckedAfter(Duration after, int limit);
 
     void checkNow(String url);

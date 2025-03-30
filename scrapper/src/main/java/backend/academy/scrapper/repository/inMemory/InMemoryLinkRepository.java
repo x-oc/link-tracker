@@ -1,4 +1,4 @@
-package backend.academy.scrapper.repository;
+package backend.academy.scrapper.repository.inMemory;
 
 import backend.academy.scrapper.model.Link;
 import java.time.Duration;
@@ -7,21 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import org.springframework.stereotype.Component;
 
-@Component
-public class InMemoryLinkRepository implements LinkRepository {
+public class InMemoryLinkRepository {
 
     List<Link> links = new ArrayList<>();
     long nextId = 1;
 
-    @Override
     public List<Link> findAll() {
         System.out.println(links.size());
         return links;
     }
 
-    @Override
     public long add(Link link) {
         Optional<Link> alreadyExisting = findByUrl(link.url());
         if (alreadyExisting.isEmpty()) {
@@ -32,12 +28,10 @@ public class InMemoryLinkRepository implements LinkRepository {
         return alreadyExisting.orElseThrow().id();
     }
 
-    @Override
     public void remove(String link) {
         links.removeIf(link1 -> link1.url().equals(link));
     }
 
-    @Override
     public Optional<Link> findByUrl(String url) {
         for (Link link : links) {
             if (link.url().equals(url)) {
@@ -47,7 +41,6 @@ public class InMemoryLinkRepository implements LinkRepository {
         return Optional.empty();
     }
 
-    @Override
     public List<Link> findByTag(String tag) {
         List<Link> answerLinks = new ArrayList<>();
         for (Link link : links) {
@@ -58,18 +51,6 @@ public class InMemoryLinkRepository implements LinkRepository {
         return answerLinks;
     }
 
-    @Override
-    public List<Link> findByFilter(String filter) {
-        List<Link> answerLinks = new ArrayList<>();
-        for (Link link : links) {
-            if (link.filters().contains(filter)) {
-                answerLinks.add(link);
-            }
-        }
-        return answerLinks;
-    }
-
-    @Override
     public List<Link> findLinksCheckedAfter(Duration after, int limit) {
         List<Link> answerLinks = new ArrayList<>();
         for (Link link : links) {
@@ -80,7 +61,6 @@ public class InMemoryLinkRepository implements LinkRepository {
         return answerLinks;
     }
 
-    @Override
     public void checkNow(String url) {
         for (Link link : links) {
             if (link.url().equals(url)) {
@@ -89,7 +69,6 @@ public class InMemoryLinkRepository implements LinkRepository {
         }
     }
 
-    @Override
     public void update(String url, OffsetDateTime lastUpdated, String info) {
         for (Link link : links) {
             if (Objects.equals(link.url(), url)) {
