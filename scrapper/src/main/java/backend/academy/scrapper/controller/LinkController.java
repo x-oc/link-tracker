@@ -33,7 +33,7 @@ public class LinkController {
     @PostMapping
     public LinkResponse addLink(
             @RequestHeader(name = "Tg-Chat-Id") Long tgChatId, @RequestBody @Valid AddLinkRequest addLinkRequest) {
-        return linkService.addLink(addLinkRequest.link(), tgChatId);
+        return linkService.addLink(addLinkRequest.link(), tgChatId, addLinkRequest.tags(), addLinkRequest.filters());
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")

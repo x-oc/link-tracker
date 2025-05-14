@@ -8,7 +8,9 @@ import backend.academy.scrapper.exception.LinkAlreadyAddedException;
 import backend.academy.scrapper.exception.LinkNotFoundException;
 import backend.academy.scrapper.exception.LinkNotSupportedException;
 import backend.academy.scrapper.model.Link;
+import backend.academy.scrapper.repository.FilterRepository;
 import backend.academy.scrapper.repository.LinkRepository;
+import backend.academy.scrapper.repository.TagRepository;
 import backend.academy.scrapper.repository.TgChatLinkRepository;
 import backend.academy.scrapper.service.LinkService;
 import java.net.URI;
@@ -26,6 +28,8 @@ public class JdbcLinkService implements LinkService {
 
     private final LinkRepository linkRepository;
     private final TgChatLinkRepository tgChatLinkRepository;
+    private final TagRepository tagRepository;
+    private final FilterRepository filterRepository;
     private final Map<String, InformationProvider> informationProviders;
 
     @Override
@@ -39,7 +43,7 @@ public class JdbcLinkService implements LinkService {
 
     @Override
     @Transactional
-    public LinkResponse addLink(URI link, Long tgChatId) {
+    public LinkResponse addLink(URI link, Long tgChatId, List<String> tags, List<String> filters) {
         if (linkRepository.findByUrl(link.toString()).isPresent()) {
             throw new LinkAlreadyAddedException(link);
         }
@@ -55,10 +59,20 @@ public class JdbcLinkService implements LinkService {
         if (!linkInformation.events().isEmpty()) {
             lastModified = linkInformation.events().getFirst().lastModified();
         }
-        List<String> tags = new ArrayList<>();
-        List<String> filters = new ArrayList<>();
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        if (filters == null) {
+            filters = new ArrayList<>();
+        }
         var id = linkRepository.add(new Link(link.toString(), tags, filters, lastModified, OffsetDateTime.now()));
         tgChatLinkRepository.add(tgChatId, id);
+        for (var tag : tags) {
+            tagRepository.add(id, tag);
+        }
+        for (var filter : filters) {
+            filterRepository.add(id, filter);
+        }
         return new LinkResponse(id, link, tags, filters);
     }
 
@@ -69,6 +83,8 @@ public class JdbcLinkService implements LinkService {
         if (optionalLink.isPresent()) {
             Link link = optionalLink.orElseThrow();
             tgChatLinkRepository.remove(tgChatId, link.id());
+            tagRepository.removeByLinkId(link.id());
+            filterRepository.removeByLink(link.id());
             if (tgChatLinkRepository.findAllByLinkId(link.id()).isEmpty()) {
                 linkRepository.remove(url);
             }

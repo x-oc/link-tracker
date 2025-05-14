@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class JdbcLinkRepository implements LinkRepository {
 
@@ -55,20 +55,6 @@ public class JdbcLinkRepository implements LinkRepository {
                 .param("url", url)
                 .query(Link.class)
                 .optional();
-    }
-
-    @Override
-    public List<Link> findByTag(String tag) {
-        return client.sql(
-                        """
-                        SELECT l.*
-                        FROM link l
-                        JOIN tag t
-                        ON l.id = t.link_id
-                        WHERE t.tag = :tag""")
-                .param("tag", tag)
-                .query(Link.class)
-                .list();
     }
 
     @Override

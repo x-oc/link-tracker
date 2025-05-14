@@ -101,19 +101,19 @@ public class LinkControllerTest {
     @Test
     @DisplayName("Тестирование LinkController#addLink")
     public void addLinkShouldWorkCorrectly() throws Exception {
-        Mockito.when(linkService.addLink(URI.create("http://localhost"), chatId))
+        Mockito.when(linkService.addLink(URI.create("http://localhost"), chatId, List.of(), List.of()))
                 .thenReturn(new LinkResponse(chatId, URI.create("http://localhost"), null, null));
         mockMvc.perform(MockMvcRequestBuilders.post("/links")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(
-                                new AddLinkRequest(URI.create("http://localhost"), null, null)))
+                                new AddLinkRequest(URI.create("http://localhost"), List.of(), List.of())))
                         .header("Tg-Chat-Id", chatId))
-                .andExpect(status().isOk())
-                .andExpect(result -> Assertions.assertThat(result.getResponse().getContentAsString())
-                        .isEqualTo("{\"id\":%s,\"url\":\"http://localhost\",\"tags\":null,\"filters\":null}"
-                                .formatted(chatId)));
+                        .andExpect(status().isOk())
+                        .andExpect(result -> Assertions.assertThat(result.getResponse().getContentAsString())
+                                .isEqualTo("{\"id\":%s,\"url\":\"http://localhost\",\"tags\":null,\"filters\":null}"
+                                        .formatted(chatId)));
 
-        Mockito.verify(linkService).addLink(URI.create("http://localhost"), chatId);
+        Mockito.verify(linkService).addLink(URI.create("http://localhost"), chatId, List.of(), List.of());
     }
 
     @Test
@@ -136,7 +136,7 @@ public class LinkControllerTest {
     @Test
     @DisplayName("Тестирование LinkController#addLink с неподдерживаемой ссылкой")
     public void addLinkShouldReturnErrorWhenLinkIsNotSupported() throws Exception {
-        Mockito.when(linkService.addLink(URI.create("http://localhost"), chatId))
+        Mockito.when(linkService.addLink(URI.create("http://localhost"), chatId, List.of(), List.of()))
                 .thenThrow(new LinkNotSupportedException("http://localhost"));
         var result = mockMvc.perform(MockMvcRequestBuilders.post("/links")
                         .contentType("application/json")

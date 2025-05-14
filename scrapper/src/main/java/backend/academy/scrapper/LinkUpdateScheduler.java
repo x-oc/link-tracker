@@ -51,7 +51,9 @@ public class LinkUpdateScheduler {
             return;
         }
         linkService.update(
-                link.url(), linkInformation.events().getFirst().lastModified(), linkInformation.metaInformation());
+            link.url(),
+            linkInformation.events().getFirst().lastModified(),
+            linkInformation.metaInformation());
         var subscribers = linkService.getLinkSubscribers(link.id()).stream().toList();
         linkInformation
                 .events()

@@ -31,4 +31,9 @@ public class TagEntity {
 
     @Column(name = "tag")
     private String tag;
+
+    public TagEntity(LinkEntity link, String tag) {
+        this.link = link;
+        this.tag = tag;
+    }
 }

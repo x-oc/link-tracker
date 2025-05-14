@@ -7,9 +7,13 @@ import backend.academy.scrapper.exception.ChatNotFoundException;
 import backend.academy.scrapper.exception.LinkNotSupportedException;
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repository.jpa.JpaChatRepository;
+import backend.academy.scrapper.repository.jpa.JpaFilterRepository;
 import backend.academy.scrapper.repository.jpa.JpaLinkRepository;
+import backend.academy.scrapper.repository.jpa.JpaTagRepository;
 import backend.academy.scrapper.repository.jpa.entity.ChatEntity;
+import backend.academy.scrapper.repository.jpa.entity.FilterEntity;
 import backend.academy.scrapper.repository.jpa.entity.LinkEntity;
+import backend.academy.scrapper.repository.jpa.entity.TagEntity;
 import backend.academy.scrapper.service.LinkService;
 import java.net.URI;
 import java.time.Duration;
@@ -26,6 +30,8 @@ public class JpaLinkService implements LinkService {
 
     private final JpaLinkRepository linkRepository;
     private final JpaChatRepository chatRepository;
+    private final JpaTagRepository tagRepository;
+    private final JpaFilterRepository filterRepository;
     private final Map<String, InformationProvider> informationProviders;
 
     @Override
@@ -45,7 +51,7 @@ public class JpaLinkService implements LinkService {
 
     @Override
     @Transactional
-    public LinkResponse addLink(URI link, Long tgChatId) {
+    public LinkResponse addLink(URI link, Long tgChatId, List<String> tags, List<String> filters) {
         var chat = chatRepository.findById(tgChatId).orElseThrow(() -> new ChatNotFoundException(tgChatId));
         var provider = informationProviders.get(link.getHost());
         if (provider == null || !provider.isSupported(link)) {
@@ -72,6 +78,12 @@ public class JpaLinkService implements LinkService {
                 new LinkEntity(link.toString(), lastModified, OffsetDateTime.now(), linkInformation.metaInformation());
         linkRepository.save(linkEntity);
         chat.addLink(linkEntity);
+        for (var tag : tags) {
+            tagRepository.save(new TagEntity(linkEntity, tag));
+        }
+        for (var filter : filters) {
+            filterRepository.save(new FilterEntity(linkEntity, filter));
+        }
         return new LinkResponse(linkEntity.id(), link, new ArrayList<>(), new ArrayList<>());
     }
 
@@ -81,6 +93,8 @@ public class JpaLinkService implements LinkService {
         var chat = chatRepository.findById(tgChatId).orElseThrow(() -> new ChatNotFoundException(tgChatId));
         var linkEntity = linkRepository.findByUrl(url).orElseThrow();
         chat.removeLink(linkEntity);
+        tagRepository.deleteByLink(linkEntity);
+        filterRepository.deleteByLink(linkEntity);
         if (linkEntity.chats().isEmpty()) {
             linkRepository.delete(linkEntity);
         }

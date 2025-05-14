@@ -12,7 +12,7 @@ public interface LinkService {
 
     ListLinksResponse listLinks(Long tgChatId);
 
-    LinkResponse addLink(URI link, Long tgChatId);
+    LinkResponse addLink(URI link, Long tgChatId, List<String> tags, List<String> filters);
 
     LinkResponse removeLink(String url, Long tgChatId);
 

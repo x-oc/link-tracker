@@ -31,4 +31,9 @@ public class FilterEntity {
 
     @Column(name = "filter")
     private String filter;
+
+    public FilterEntity(LinkEntity link, String filter) {
+        this.link = link;
+        this.filter = filter;
+    }
 }

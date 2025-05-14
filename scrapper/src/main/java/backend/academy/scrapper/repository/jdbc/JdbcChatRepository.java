@@ -4,9 +4,9 @@ import backend.academy.scrapper.repository.TgChatRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class JdbcChatRepository implements TgChatRepository {
 
