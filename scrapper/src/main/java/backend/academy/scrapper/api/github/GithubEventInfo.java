@@ -15,14 +15,13 @@ public record GithubEventInfo(
 
     public record EventPayload(
             String size,
-            String ref,
+            String action,
             IssueCommentEventPayload issue,
-            @JsonProperty("pull_request") PullRequestEventPayload pullRequest,
-            @JsonProperty("ref_type") String refType) {}
+            @JsonProperty("pull_request") PullRequestEventPayload pullRequest) {}
 
-    public record IssueCommentEventPayload(String title) {}
+    public record IssueCommentEventPayload(String title, String body) {}
 
-    public record PullRequestEventPayload(String title) {}
+    public record PullRequestEventPayload(String title, String body) {}
 
     public record Actor(String login) {}
 }

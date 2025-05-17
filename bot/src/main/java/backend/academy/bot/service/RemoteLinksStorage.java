@@ -3,6 +3,7 @@ package backend.academy.bot.service;
 import backend.academy.bot.client.ScrapperClient;
 import backend.academy.bot.dto.request.AddLinkRequest;
 import backend.academy.bot.dto.request.RemoveLinkRequest;
+import backend.academy.bot.exception.ApiErrorException;
 import backend.academy.bot.model.Link;
 import backend.academy.bot.response.BotResponses;
 import java.net.URI;
@@ -11,6 +12,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @Service
@@ -21,68 +23,92 @@ public class RemoteLinksStorage implements LinksStorage {
 
     @Override
     public String registerUser(Long chatId) {
-        var response = scrapperClient.registerChat(chatId);
-        if (response.getStatusCode().isError()) {
-            log.atWarn()
-                    .setMessage("Error response while trying to register user.")
-                    .addKeyValue("statusCode", response.getStatusCode())
-                    .addKeyValue("message", response.getBody())
-                    .addKeyValue("chatId", chatId)
-                    .log();
-            return BotResponses.REGISTER_USER_FAIL.message;
+        try {
+            scrapperClient.registerChat(chatId);
+            return BotResponses.REGISTER_USER_SUCCESS.message;
+        } catch (Exception e) {
+            String response = handleScrapperClientException(e, chatId, "registerUser");
+            if (response == null || response.isEmpty() || response.equals(BotResponses.FAIL.message)) {
+                return BotResponses.REGISTER_USER_FAIL.message;
+            }
+            return response;
         }
-        return BotResponses.REGISTER_USER_SUCCESS.message;
     }
 
     @Override
     public String addUserLink(Long chatId, String url, List<String> tags, List<String> filters) {
-        var response = scrapperClient.addLink(chatId, new AddLinkRequest(URI.create(url), tags, filters));
-        if (response.isError()) {
-            log.atWarn()
-                    .setMessage("Error response while trying to add user link.")
-                    .addKeyValue("statusCode", response.apiErrorResponse().code())
-                    .addKeyValue("message", response.apiErrorResponse().exceptionMessage())
-                    .addKeyValue("chatId", chatId)
-                    .log();
-            return response.apiErrorResponse().description();
+        try {
+            scrapperClient.addLink(chatId, new AddLinkRequest(URI.create(url), tags, filters));
+            return BotResponses.ADD_USER_LINK_SUCCESS.message;
+        } catch (Exception e) {
+            return handleScrapperClientException(e, chatId, "addUserLink");
         }
-        return BotResponses.ADD_USER_LINK_SUCCESS.message;
     }
 
     @Override
     public String removeUserLink(Long chatId, String url) {
         try {
-            var response = scrapperClient.removeLink(chatId, new RemoveLinkRequest(URI.create(url)));
-            if (response.isError()) {
-                log.atWarn()
-                        .setMessage("Error response while trying to remove user link.")
-                        .addKeyValue("statusCode", response.apiErrorResponse().code())
-                        .addKeyValue("message", response.apiErrorResponse().exceptionMessage())
-                        .addKeyValue("chatId", chatId)
-                        .log();
-                return response.apiErrorResponse().description();
-            }
+            scrapperClient.removeLink(chatId, new RemoveLinkRequest(URI.create(url)));
             return BotResponses.REMOVE_USER_LINK_SUCCESS.message;
-        } catch (IllegalArgumentException e) {
-            return BotResponses.REMOVE_USER_LINK_FAIL.message;
+        } catch (Exception e) {
+            String response = handleScrapperClientException(e, chatId, "removeUserLink");
+            if (response == null || response.isEmpty() || response.equals(BotResponses.FAIL.message)) {
+                return BotResponses.REMOVE_USER_LINK_FAIL.message;
+            }
+            return response;
         }
     }
 
     @Override
     public List<Link> getLinks(Long chatId) {
-        var response = scrapperClient.listLinks(chatId).answer();
-        var linkDTOs = response.links();
         List<Link> links = new ArrayList<>();
-        if (linkDTOs == null) {
-            log.atWarn()
+        try {
+            var response = scrapperClient.listLinks(chatId).answer();
+            var linkDTOs = response.links();
+            if (linkDTOs == null) {
+                log.atWarn()
                     .setMessage("Error response while trying get user link.")
                     .addKeyValue("chatId", chatId)
                     .log();
+                return links;
+            }
+            for (var link : linkDTOs) {
+                links.add(new Link(link.url().toString()));
+            }
+            return links;
+        } catch (Exception e) {
             return links;
         }
-        for (var link : linkDTOs) {
-            links.add(new Link(link.url().toString()));
+    }
+
+    private String handleScrapperClientException(Exception e, Long chatId, String action) {
+        if (e instanceof WebClientResponseException webClientResponseException) {
+            log.atWarn()
+                .setMessage("Error while getting response from scrapper.")
+                .addKeyValue("action", action)
+                .addKeyValue("statusCode", webClientResponseException.getStatusCode())
+                .addKeyValue("message", webClientResponseException.getResponseBodyAsString())
+                .addKeyValue("chatId", chatId)
+                .log();
+            return webClientResponseException.getResponseBodyAsString();
+        } else if (e instanceof ApiErrorException apiErrorException) {
+            log.atWarn()
+                .setMessage("Error response from scrapper.")
+                .addKeyValue("action", action)
+                .addKeyValue("statusCode", apiErrorException.getErrorResponse().code())
+                .addKeyValue("message", apiErrorException.getErrorResponse().exceptionMessage())
+                .addKeyValue("chatId", chatId)
+                .log();
+            return apiErrorException.getErrorResponse().exceptionMessage();
+        } else {
+            log.atWarn()
+                .setMessage("Unknown error while getting response from scrapper.")
+                .addKeyValue("action", action)
+                .addKeyValue("stackTrace", e.getStackTrace())
+                .addKeyValue("message", e.getMessage())
+                .addKeyValue("chatId", chatId)
+                .log();
+            return BotResponses.FAIL.message;
         }
-        return links;
     }
 }

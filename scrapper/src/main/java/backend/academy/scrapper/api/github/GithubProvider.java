@@ -8,6 +8,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,45 +36,85 @@ public class GithubProvider extends EventCollectableInformationProvider<GithubEv
         registerCollector(
                 "PushEvent",
                 item -> new LinkUpdateEvent(
-                        "github.push_event",
+                        "%s new commits by user %s in '%s' repo!".formatted(
+                            item.payload().size(),
+                            item.repo().name(),
+                            item.actor().login()),
                         item.lastModified(),
                         Map.of(
-                                "size", String.valueOf(item.payload().size()),
-                                "repo", String.valueOf(item.repo().name()),
-                                "user", String.valueOf(item.actor().login()))));
+                                "size", item.payload().size(),
+                                "repo", item.repo().name(),
+                                "user", item.actor().login())));
         registerCollector(
                 "IssueCommentEvent",
                 item -> new LinkUpdateEvent(
-                        "github.issue_comment_event",
+                        "New message by user %s in '%s' issue!".formatted(
+                            item.actor().login(),
+                            item.payload().issue().title()),
                         item.lastModified(),
                         Map.of(
                                 "title", item.payload().issue().title(),
-                                "user", String.valueOf(item.actor().login()))));
+                                "user", item.actor().login())));
         registerCollector(
                 "IssuesEvent",
-                item -> new LinkUpdateEvent(
-                        "github.issues_event",
+                item -> {
+                    if (Objects.equals(item.payload().action(), "opened")) {
+                        String body = item.payload().issue().body();
+                        body = body.length() > 200 ? "%s ...".formatted(body.substring(0, 200)) : body;
+                        return new LinkUpdateEvent(
+                            "User %s opened new issue '%s' in '%s' repo: %s".formatted(
+                                item.actor().login(),
+                                item.payload().issue().title(),
+                                item.repo().name(),
+                                body
+                            ),
+                            item.lastModified(),
+                            Map.of(
+                                "title", item.payload().issue().title(),
+                                "repo", item.repo().name(),
+                                "user", item.actor().login(),
+                                "body", body));
+                    }
+                    return new LinkUpdateEvent(
+                        "Issue '%s' in '%s' repo is updated!".formatted(
+                            item.payload().issue().title(),
+                            item.repo().name()
+                        ),
                         item.lastModified(),
                         Map.of(
                                 "title", item.payload().issue().title(),
-                                "repo", String.valueOf(item.repo().name()))));
+                                "repo", item.repo().name()));
+                });
         registerCollector(
                 "PullRequestEvent",
-                item -> new LinkUpdateEvent(
-                        "github.pull_request_event",
-                        item.lastModified(),
-                        Map.of(
+                item -> {
+                    if (Objects.equals(item.payload().action(), "opened")) {
+                        String body = item.payload().pullRequest().body();
+                        body = body.length() > 200 ? "%s ...".formatted(body.substring(0, 200)) : body;
+                        return new LinkUpdateEvent(
+                            "User %s opened new pull request '%s' in '%s' repo: %s".formatted(
+                                item.actor().login(),
+                                item.payload().pullRequest().title(),
+                                item.repo().name(),
+                                body
+                            ),
+                            item.lastModified(),
+                            Map.of(
                                 "title", item.payload().pullRequest().title(),
-                                "repo", String.valueOf(item.repo().name()))));
-        registerCollector(
-                "CreateEvent",
-                item -> new LinkUpdateEvent(
-                        "github.create_event",
+                                "repo", item.repo().name(),
+                                "user", item.actor().login(),
+                                "body", body));
+                    }
+                    return new LinkUpdateEvent(
+                        "Pull request '%s' in '%s' repo is updated!".formatted(
+                            item.payload().pullRequest().title(),
+                            item.repo().name()
+                        ),
                         item.lastModified(),
                         Map.of(
-                                "ref", String.valueOf(item.payload().ref()),
-                                "ref_type", String.valueOf(item.payload().refType()),
-                                "repo", String.valueOf(item.repo().name()))));
+                            "title", item.payload().pullRequest().title(),
+                            "repo", item.repo().name()));
+                });
     }
 
     @Override
@@ -106,6 +147,7 @@ public class GithubProvider extends EventCollectableInformationProvider<GithubEv
                     .log();
             return null;
         }
+
         return new LinkInformation(
                 url,
                 !info.events().isEmpty() ? info.events().getFirst().repo().name() : "",
@@ -114,7 +156,7 @@ public class GithubProvider extends EventCollectableInformationProvider<GithubEv
                             var collector = getCollector(it.type());
                             if (collector == null) {
                                 return new LinkUpdateEvent(
-                                        "github.%s".formatted(it.type().toLowerCase()),
+                                        "New update on github: %s".formatted(it.type().toLowerCase()),
                                         it.lastModified(),
                                         Map.of("type", it.type()));
                             }

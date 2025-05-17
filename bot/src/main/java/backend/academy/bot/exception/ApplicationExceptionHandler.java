@@ -9,8 +9,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @Slf4j
@@ -49,6 +51,13 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
                 .addKeyValue("request", request)
                 .log();
         return handleIncorrectRequest(ex, status);
+    }
+
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity<String> handleException(WebClientResponseException ex) {
+        ApiErrorResponse error = ex.getResponseBodyAs(ApiErrorResponse.class);
+        String errorMessage = error.exceptionMessage();
+        return ResponseEntity.status(ex.getStatusCode()).body(errorMessage);
     }
 
     private ResponseEntity<Object> handleIncorrectRequest(Exception ex, HttpStatusCode status) {

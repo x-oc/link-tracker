@@ -78,11 +78,16 @@ public class JpaLinkService implements LinkService {
                 new LinkEntity(link.toString(), lastModified, OffsetDateTime.now(), linkInformation.metaInformation());
         linkRepository.save(linkEntity);
         chat.addLink(linkEntity);
-        for (var tag : tags) {
-            tagRepository.save(new TagEntity(linkEntity, tag));
+        if (tags != null) {
+            for (var tag : tags) {
+                tagRepository.save(new TagEntity(linkEntity, tag));
+            }
         }
-        for (var filter : filters) {
-            filterRepository.save(new FilterEntity(linkEntity, filter));
+
+        if (filters != null) {
+            for (var filter : filters) {
+                filterRepository.save(new FilterEntity(linkEntity, filter));
+            }
         }
         return new LinkResponse(linkEntity.id(), link, new ArrayList<>(), new ArrayList<>());
     }

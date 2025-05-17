@@ -5,7 +5,8 @@ public enum BotResponses {
     REGISTER_USER_FAIL("An error occurred while trying to register. Sorry("),
     ADD_USER_LINK_SUCCESS("Link added successfully!"),
     REMOVE_USER_LINK_SUCCESS("Link removed successfully!"),
-    REMOVE_USER_LINK_FAIL("Invalid link!");
+    REMOVE_USER_LINK_FAIL("Invalid link!"),
+    FAIL("Unexpected error!"),;
 
     public final String message;
 

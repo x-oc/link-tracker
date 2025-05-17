@@ -1,8 +1,8 @@
 app:
   scheduler:
     enable: true
-    interval: 30s
-    force-check-delay: 30s
+    interval: 60s
+    force-check-delay: 60s
     max-links-per-check: 100
   github-token: ${GITHUB_TOKEN} # env variable
   stackoverflow:
@@ -24,16 +24,15 @@ spring:
     name: Scrapper
   liquibase:
     enabled: false
+    change-log: ../../../../migrations/master.xml
   datasource:
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost:5432}/scrapper
+    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost:5433}/scrapper
     username: postgres
     password: ${DB_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-  config:
-    import: optional:file:./application.env
 
 server:
   port: 8081
@@ -48,4 +47,4 @@ logging:
     format:
       console: ecs
   file:
-    name: log.json
+    name: logs/scrapper-log.json

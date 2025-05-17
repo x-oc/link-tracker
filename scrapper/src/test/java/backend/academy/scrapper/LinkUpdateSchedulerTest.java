@@ -78,7 +78,7 @@ class LinkUpdateSchedulerTest {
 
         verify(sender, times(1))
                 .sendUpdate(new LinkUpdate(
-                        0L, URI.create(url), linkInformation.events().getFirst().type(), List.of(1L, 2L)));
+                        0L, URI.create(url), linkInformation.events().getFirst().description(), List.of(1L, 2L)));
         verify(linkService, times(1))
                 .update(url, linkInformation.events().getFirst().lastModified(), linkInformation.metaInformation());
     }

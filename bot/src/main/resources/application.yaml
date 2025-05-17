@@ -7,15 +7,13 @@ spring:
   liquibase:
     enabled: false
   datasource:
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost:5432}/scrapper
+    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost:5433}/scrapper
     username: postgres
-    password: ${DB_PASSWORD}
+    password: ${DB_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
-  config:
-    import: optional:file:./application.env
 
 server:
   port: 8090
@@ -33,4 +31,4 @@ logging:
     format:
       console: ecs
   file:
-    name: log.json
+    name: logs/bot-log.json

@@ -36,13 +36,17 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
         registerCollector(
                 "AnswerEvent",
                 item -> new LinkUpdateEvent(
-                        "stackoverflow.answers_event",
+                        "There are %s new answers on the question!".formatted(
+                            String.valueOf(item.answersCount())
+                        ),
                         item.lastModified(),
                         Map.of("count", String.valueOf(item.answersCount()))));
         registerCollector(
                 "ScoreEvent",
                 item -> new LinkUpdateEvent(
-                        "stackoverflow.score_event",
+                        "The question got new rating! The new rating: %s".formatted(
+                            String.valueOf(item.score())
+                        ),
                         item.lastModified(),
                         Map.of("score", String.valueOf(item.score()))));
         if (config.stackOverflow() != null

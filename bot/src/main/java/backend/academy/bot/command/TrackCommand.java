@@ -47,7 +47,7 @@ public class TrackCommand implements Command {
             return "Invalid link";
         }
         String response = linksStorage.addUserLink(arguments.chatId(), arguments.userArguments(), null, null);
-        if (!response.equals(BotResponses.ADD_USER_LINK_SUCCESS.message)) {
+        if (response == null || !response.equals(BotResponses.ADD_USER_LINK_SUCCESS.message)) {
             return response;
         }
 

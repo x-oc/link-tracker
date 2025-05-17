@@ -59,6 +59,6 @@ public class LinkUpdateScheduler {
                 .events()
                 .reversed()
                 .forEach(event -> sender.sendUpdate(
-                        new LinkUpdate(link.id(), URI.create(link.url()), event.type(), subscribers)));
+                        new LinkUpdate(link.id(), URI.create(link.url()), event.description(), subscribers)));
     }
 }

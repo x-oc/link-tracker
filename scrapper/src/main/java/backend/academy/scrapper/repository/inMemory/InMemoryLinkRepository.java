@@ -14,7 +14,6 @@ public class InMemoryLinkRepository {
     long nextId = 1;
 
     public List<Link> findAll() {
-        System.out.println(links.size());
         return links;
     }
 

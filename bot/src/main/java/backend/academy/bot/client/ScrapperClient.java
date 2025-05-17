@@ -16,7 +16,7 @@ import org.springframework.web.service.annotation.PostExchange;
 public interface ScrapperClient {
 
     @PostExchange("/tg-chat/{id}")
-    ResponseEntity<Void> registerChat(@PathVariable Long id);
+    void registerChat(@PathVariable Long id);
 
     @DeleteExchange("/tg-chat/{id}")
     ResponseEntity<Void> deleteChat(@PathVariable Long id);
