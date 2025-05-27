@@ -11,8 +11,7 @@ CREATE TABLE IF NOT EXISTS link
     id               BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     url              TEXT UNIQUE,
     last_checked     TIMESTAMP WITH TIME ZONE,
-    last_updated     TIMESTAMP WITH TIME ZONE,
-    meta_information TEXT
+    last_updated     TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE IF NOT EXISTS chat_link

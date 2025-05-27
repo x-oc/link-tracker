@@ -57,7 +57,7 @@ public class JdbcLinkService implements LinkService {
         }
         OffsetDateTime lastModified = OffsetDateTime.now();
         if (!linkInformation.events().isEmpty()) {
-            lastModified = linkInformation.events().getFirst().lastModified();
+            lastModified = linkInformation.events().getFirst().lastUpdated();
         }
         if (tags == null) {
             tags = new ArrayList<>();
@@ -102,11 +102,11 @@ public class JdbcLinkService implements LinkService {
 
     @Override
     @Transactional
-    public void update(String url, OffsetDateTime lastModified, String metaInformation) {
+    public void update(String url, OffsetDateTime lastModified) {
         if (linkRepository.findByUrl(url).isEmpty()) {
             throw new LinkNotFoundException(url);
         }
-        linkRepository.update(url, lastModified, metaInformation);
+        linkRepository.update(url, lastModified);
     }
 
     @Override

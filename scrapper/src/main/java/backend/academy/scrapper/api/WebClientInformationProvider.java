@@ -26,7 +26,7 @@ public abstract class WebClientInformationProvider implements InformationProvide
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
                     .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), response -> {
-                        log.atError()
+                        log.atWarn()
                                 .setMessage("Error while executing request.")
                                 .addKeyValue("status", response.statusCode())
                                 .addKeyValue("uri", uri)

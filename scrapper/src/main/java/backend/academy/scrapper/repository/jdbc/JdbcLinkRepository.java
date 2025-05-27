@@ -25,18 +25,16 @@ public class JdbcLinkRepository implements LinkRepository {
     public long add(Link link) {
         return client.sql(
                         """
-                        INSERT INTO link(url, last_updated, last_checked, meta_information)
-                        VALUES (:link, :last_updated, :last_checked, :meta_information)
+                        INSERT INTO link(url, last_updated, last_checked)
+                        VALUES (:link, :last_updated, :last_checked)
                         ON CONFLICT (url)
                         DO UPDATE SET
                         last_updated = :last_updated,
-                        last_checked = :last_checked,
-                        meta_information = :meta_information
+                        last_checked = :last_checked
                         RETURNING id""")
                 .param("link", link.url())
                 .param("last_updated", link.lastUpdated())
                 .param("last_checked", link.lastChecked())
-                .param("meta_information", link.metaInformation())
                 .query(Long.class)
                 .single();
     }
@@ -74,18 +72,16 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    public void update(String url, OffsetDateTime lastModified, String info) {
+    public void update(String url, OffsetDateTime lastModified) {
         client.sql(
                         """
                 UPDATE link
                 SET last_checked = :last_checked,
-                last_updated = :last_updated,
-                meta_information = :meta_information
+                last_updated = :last_updated
                 WHERE url = :url""")
                 .param("last_checked", OffsetDateTime.now())
                 .param("last_updated", lastModified)
                 .param("url", url)
-                .param("meta_information", info)
                 .update();
     }
 

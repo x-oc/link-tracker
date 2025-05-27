@@ -1,17 +1,13 @@
 package backend.academy.scrapper.api.stackoverflow;
 
-import backend.academy.scrapper.api.EventCollectableInformationProvider;
 import backend.academy.scrapper.api.LinkInformation;
 import backend.academy.scrapper.api.LinkUpdateEvent;
+import backend.academy.scrapper.api.WebClientInformationProvider;
 import backend.academy.scrapper.config.ScrapperConfig;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.SneakyThrows;
@@ -22,39 +18,22 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class StackOverflowProvider extends EventCollectableInformationProvider<StackOverflowItem> {
+public class StackOverflowProvider extends WebClientInformationProvider {
     private static final Pattern QUESTION_PATTERN = Pattern.compile("https://stackoverflow.com/questions/(\\d+).*");
-    private static final TypeReference<HashMap<String, String>> STRING_HASHMAP = new TypeReference<>() {};
     private final String authorizationQueryParam;
-    private final ObjectMapper mapper;
 
     @Autowired
     public StackOverflowProvider(
-            @Value("${provider.stackoverflow.url}") String apiUrl, ScrapperConfig config, ObjectMapper mapper) {
+            @Value("${provider.stackoverflow.url}") String apiUrl, ScrapperConfig config) {
         super(apiUrl);
-        this.mapper = mapper;
-        registerCollector(
-                "AnswerEvent",
-                item -> new LinkUpdateEvent(
-                        "There are %s new answers on the question!".formatted(
-                            String.valueOf(item.answersCount())
-                        ),
-                        item.lastModified(),
-                        Map.of("count", String.valueOf(item.answersCount()))));
-        registerCollector(
-                "ScoreEvent",
-                item -> new LinkUpdateEvent(
-                        "The question got new rating! The new rating: %s".formatted(
-                            String.valueOf(item.score())
-                        ),
-                        item.lastModified(),
-                        Map.of("score", String.valueOf(item.score()))));
         if (config.stackOverflow() != null
                 && config.stackOverflow().accessToken() != null
                 && !config.stackOverflow().accessToken().isBlank()
                 && !"${SO_ACCESS_TOKEN}".equals(config.stackOverflow().accessToken())) {
-            authorizationQueryParam = "access_token=" + config.stackOverflow().accessToken() + "&key="
-                    + config.stackOverflow().key();
+            authorizationQueryParam = "access_token=%s&key=%s".formatted(
+                config.stackOverflow().accessToken(),
+                config.stackOverflow().key()
+            );
         } else {
             authorizationQueryParam = "";
         }
@@ -73,7 +52,9 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
     @SneakyThrows
     @Override
     public LinkInformation fetchInformation(URI url) {
+
         Matcher matcher = QUESTION_PATTERN.matcher(url.toString());
+
         if (!matcher.matches()) {
             log.atWarn()
                     .setMessage("Trying to fetch unsupported url.")
@@ -83,56 +64,79 @@ public class StackOverflowProvider extends EventCollectableInformationProvider<S
             return null;
         }
         var questionId = matcher.group(1);
-        var uri = "/questions/%s?site=stackoverflow&%s".formatted(questionId, authorizationQueryParam);
-        var info = executeRequest(uri, StackOverflowInfoResponse.class, StackOverflowInfoResponse.EMPTY);
 
-        if (info == null || info.equals(StackOverflowInfoResponse.EMPTY) || info.items.length == 0) {
-            log.atWarn()
-                    .setMessage("StackOverflow returned no info.")
-                    .addKeyValue("uri", uri)
-                    .log();
+        var questionUri = "/questions/%s?site=stackoverflow&%s".formatted(questionId, authorizationQueryParam);
+        SoApiQuestionsResponse questionInfo = executeRequest(
+            questionUri,
+            SoApiQuestionsResponse.class,
+            SoApiQuestionsResponse.EMPTY
+        );
+        var answersUri = "/questions/%s/answers?site=stackoverflow&filter=withbody&%s".formatted(questionId, authorizationQueryParam);
+        SoApiAnswersResponse answersInfo = executeRequest(
+            answersUri,
+            SoApiAnswersResponse.class,
+            SoApiAnswersResponse.EMPTY
+        );
+
+        if (SoNoInfoReturned(questionInfo, answersInfo, url)) {
             return null;
         }
-        List<LinkUpdateEvent> events = linkUpdateEventsCollector().values().stream()
-                .map(stackOverflowItemLinkUpdateEventFunction ->
-                        stackOverflowItemLinkUpdateEventFunction.apply(info.items()[0]))
-                .toList();
-        HashMap<String, String> metaInformation = new HashMap<>();
-        for (LinkUpdateEvent event : events) {
-            metaInformation.putAll(event.additionalData());
-        }
-        return new LinkInformation(url, info.items()[0].title(), events, mapper.writeValueAsString(metaInformation));
+
+        String questionTitle = questionInfo.items()[0].title();
+
+        List<LinkUpdateEvent> events = Arrays.stream(answersInfo.items())
+            .map(answer ->{
+                String body = answer.body();
+                if (body == null) {
+                    body = "No answer";
+                }
+                body = body.length() > 200 ? "%s ...".formatted(body.substring(0, 200)) : body;
+                return new LinkUpdateEvent(
+                    "There is new answer by user %s on the question '%s': %s".formatted(
+                        answer.owner().name(),
+                        questionTitle,
+                        body
+                    ),
+                    answer.creationDate());
+            })
+            .toList();
+        return new LinkInformation(url, questionInfo.items()[0].title(), events);
     }
 
     @SneakyThrows
     @Override
-    public LinkInformation filter(LinkInformation info, OffsetDateTime after, String optionalMetaInfo) {
-        Map<String, String> optionalData = new HashMap<>();
-        if (optionalMetaInfo != null && !optionalMetaInfo.isEmpty()) {
-            optionalData = mapper.readValue(optionalMetaInfo, STRING_HASHMAP);
-        }
-        List<LinkUpdateEvent> realEvents = new ArrayList<>();
+    public LinkInformation filter(LinkInformation info, OffsetDateTime after) {
         List<LinkUpdateEvent> filteredEvents = info.events().stream()
-                .filter(event -> event.lastModified().isAfter(after))
+                .filter(event -> event.lastUpdated().isAfter(after))
                 .toList();
-        for (LinkUpdateEvent event : filteredEvents) {
-            for (Map.Entry<String, String> entry : event.additionalData().entrySet()) {
-                if (optionalData.containsKey(entry.getKey())) {
-                    String value = optionalData.get(entry.getKey());
-                    if (value.equals(entry.getValue())) {
-                        continue;
-                    }
-                }
-                optionalData.put(entry.getKey(), entry.getValue());
-                if (!realEvents.contains(event)) {
-                    realEvents.add(event);
-                }
-            }
-        }
-        return new LinkInformation(info.url(), info.title(), realEvents, mapper.writeValueAsString(optionalData));
+        return new LinkInformation(info.url(), info.title(), filteredEvents);
     }
 
-    private record StackOverflowInfoResponse(StackOverflowItem[] items) {
-        public static final StackOverflowInfoResponse EMPTY = new StackOverflowInfoResponse(null);
+    private boolean SoNoInfoReturned(SoApiQuestionsResponse questionInfo,
+                                     SoApiAnswersResponse answersInfo,
+                                     URI url) {
+        boolean SoNoInfoReturned =
+            questionInfo == null ||
+            answersInfo == null ||
+            questionInfo.equals(SoApiQuestionsResponse.EMPTY) ||
+            answersInfo.equals(SoApiAnswersResponse.EMPTY) ||
+            questionInfo.items.length == 0 ||
+            answersInfo.items.length == 0;
+
+        if (SoNoInfoReturned) {
+            log.atWarn()
+                .setMessage("StackOverflow returned no info.")
+                .addKeyValue("url", url)
+                .log();
+        }
+        return SoNoInfoReturned;
+    }
+
+    private record SoApiQuestionsResponse(StackOverflowQuestionDTO[] items) {
+        public static final SoApiQuestionsResponse EMPTY = new SoApiQuestionsResponse(null);
+    }
+
+    private record SoApiAnswersResponse(StackOverflowAnswersDTO[] items) {
+        public static final SoApiAnswersResponse EMPTY = new SoApiAnswersResponse(null);
     }
 }

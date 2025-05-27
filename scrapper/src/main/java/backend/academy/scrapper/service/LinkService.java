@@ -18,7 +18,7 @@ public interface LinkService {
 
     List<Link> listOldLinks(Duration after, int limit);
 
-    void update(String url, OffsetDateTime lastModified, String metaInformation);
+    void update(String url, OffsetDateTime lastModified);
 
     List<Long> getLinkSubscribers(long linkId);
 

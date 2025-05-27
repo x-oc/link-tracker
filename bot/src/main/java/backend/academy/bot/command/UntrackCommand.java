@@ -18,6 +18,11 @@ public class UntrackCommand implements Command {
     }
 
     @Override
+    public String commandWithArguments() {
+        return "/untrack <link>";
+    }
+
+    @Override
     public String description() {
         return "stop tracking the link";
     }

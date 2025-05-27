@@ -18,7 +18,6 @@ import backend.academy.scrapper.service.LinkService;
 import java.net.URI;
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,10 +68,9 @@ class LinkUpdateSchedulerTest {
         LinkInformation linkInformation = new LinkInformation(
                 URI.create(url),
                 "Программа на python для решения СЛАУ",
-                List.of(new LinkUpdateEvent("update", OffsetDateTime.now(), new HashMap<>())));
+                List.of(new LinkUpdateEvent("update", OffsetDateTime.now())));
         when(provider.fetchInformation(URI.create(url))).thenReturn(linkInformation);
-        when(provider.filter(linkInformation, link.lastUpdated(), link.metaInformation()))
-                .thenReturn(linkInformation);
+        when(provider.filter(linkInformation, link.lastUpdated())).thenReturn(linkInformation);
 
         linkUpdateScheduler.update();
 
@@ -80,7 +78,7 @@ class LinkUpdateSchedulerTest {
                 .sendUpdate(new LinkUpdate(
                         0L, URI.create(url), linkInformation.events().getFirst().description(), List.of(1L, 2L)));
         verify(linkService, times(1))
-                .update(url, linkInformation.events().getFirst().lastModified(), linkInformation.metaInformation());
+                .update(url, linkInformation.events().getFirst().lastUpdated());
     }
 
     @Test
@@ -94,7 +92,7 @@ class LinkUpdateSchedulerTest {
         LinkInformation linkInformation =
                 new LinkInformation(URI.create(url), "Программа на python для решения СЛАУ", List.of());
         when(provider.fetchInformation(URI.create(url))).thenReturn(linkInformation);
-        when(provider.filter(linkInformation, link.lastUpdated(), link.metaInformation()))
+        when(provider.filter(linkInformation, link.lastUpdated()))
                 .thenReturn(linkInformation);
 
         linkUpdateScheduler.update();

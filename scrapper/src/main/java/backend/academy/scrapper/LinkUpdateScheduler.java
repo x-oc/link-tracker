@@ -39,7 +39,7 @@ public class LinkUpdateScheduler {
                     URI uri = URI.create(link.url());
                     InformationProvider provider = informationProviders.get(uri.getHost());
                     LinkInformation linkInformation = provider.fetchInformation(uri);
-                    linkInformation = provider.filter(linkInformation, link.lastUpdated(), link.metaInformation());
+                    linkInformation = provider.filter(linkInformation, link.lastUpdated());
                     processLinkInformation(linkInformation, link);
                 });
         log.info("Update finished.");
@@ -52,8 +52,7 @@ public class LinkUpdateScheduler {
         }
         linkService.update(
             link.url(),
-            linkInformation.events().getFirst().lastModified(),
-            linkInformation.metaInformation());
+            linkInformation.events().getFirst().lastUpdated());
         var subscribers = linkService.getLinkSubscribers(link.id()).stream().toList();
         linkInformation
                 .events()

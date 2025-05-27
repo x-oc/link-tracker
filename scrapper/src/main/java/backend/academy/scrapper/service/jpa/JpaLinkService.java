@@ -57,25 +57,25 @@ public class JpaLinkService implements LinkService {
         if (provider == null || !provider.isSupported(link)) {
             throw new LinkNotSupportedException(link.toString());
         }
+
         var linkInformation = provider.fetchInformation(link);
         if (linkInformation == null) {
             throw new LinkNotSupportedException(link.toString());
         }
         var lastModified = OffsetDateTime.now();
         if (!linkInformation.events().isEmpty()) {
-            lastModified = linkInformation.events().getFirst().lastModified();
+            lastModified = linkInformation.events().getFirst().lastUpdated();
         }
         var optionalLink = linkRepository.findByUrl(link.toString());
         if (optionalLink.isPresent()) {
             LinkEntity linkEntity = optionalLink.orElseThrow();
             linkEntity.lastUpdated(lastModified);
             linkEntity.lastChecked(OffsetDateTime.now());
-            linkEntity.metaInformation(linkInformation.metaInformation());
             chat.addLink(linkEntity);
             return new LinkResponse(linkEntity.id(), link, new ArrayList<>(), new ArrayList<>());
         }
         var linkEntity =
-                new LinkEntity(link.toString(), lastModified, OffsetDateTime.now(), linkInformation.metaInformation());
+                new LinkEntity(link.toString(), lastModified, OffsetDateTime.now());
         linkRepository.save(linkEntity);
         chat.addLink(linkEntity);
         if (tags != null) {
@@ -117,10 +117,9 @@ public class JpaLinkService implements LinkService {
 
     @Override
     @Transactional
-    public void update(String url, OffsetDateTime lastModified, String metaInformation) {
+    public void update(String url, OffsetDateTime lastUpdated) {
         var link = linkRepository.findByUrl(url).orElseThrow();
-        link.lastUpdated(lastModified);
-        link.metaInformation(metaInformation);
+        link.lastUpdated(lastUpdated);
     }
 
     @Override

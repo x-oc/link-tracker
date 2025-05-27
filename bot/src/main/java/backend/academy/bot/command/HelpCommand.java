@@ -24,8 +24,8 @@ public class HelpCommand implements Command {
     @Override
     public String handle(CommandArguments arguments) {
         StringBuilder sb = new StringBuilder("Sure! Here's the list of available commands: \n ");
-        commands.forEach(command -> sb.append(command.command())
-                .append(" ")
+        commands.forEach(command -> sb.append(command.commandWithArguments())
+                .append(" - ")
                 .append(command.description())
                 .append("\n "));
         return sb.toString();

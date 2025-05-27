@@ -40,9 +40,6 @@ public class LinkEntity {
     @Column(name = "last_updated")
     private OffsetDateTime lastUpdated;
 
-    @Column(name = "meta_information")
-    private String metaInformation;
-
     @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TagEntity> tags = new HashSet<>();
 
@@ -52,11 +49,10 @@ public class LinkEntity {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "links")
     private Set<ChatEntity> chats = new HashSet<>();
 
-    public LinkEntity(String url, OffsetDateTime lastUpdated, OffsetDateTime lastChecked, String metaInformation) {
+    public LinkEntity(String url, OffsetDateTime lastUpdated, OffsetDateTime lastChecked) {
         this.url = url;
         this.lastUpdated = lastUpdated;
         this.lastChecked = lastChecked;
-        this.metaInformation = metaInformation;
     }
 
     public Link toDto() {
@@ -65,8 +61,7 @@ public class LinkEntity {
                 url,
                 tags.stream().map(TagEntity::tag).collect(Collectors.toList()),
                 filters.stream().map(FilterEntity::filter).collect(Collectors.toList()),
-                lastUpdated,
                 lastChecked,
-                metaInformation);
+                lastUpdated);
     }
 }

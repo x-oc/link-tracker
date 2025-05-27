@@ -8,7 +8,6 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 
 import backend.academy.scrapper.api.LinkInformation;
 import backend.academy.scrapper.config.ScrapperConfig;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.net.URI;
 import lombok.SneakyThrows;
@@ -32,7 +31,7 @@ public class StackOverflowProviderTest {
         server.stubFor(
                 get(urlPathMatching("/questions/101.*")).willReturn(aResponse().withStatus(404)));
         server.start();
-        provider = new StackOverflowProvider(server.baseUrl(), EMPTY_CONFIG, new ObjectMapper());
+        provider = new StackOverflowProvider(server.baseUrl(), EMPTY_CONFIG);
     }
 
     @SneakyThrows

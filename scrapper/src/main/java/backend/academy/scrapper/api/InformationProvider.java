@@ -11,9 +11,6 @@ public interface InformationProvider {
 
     LinkInformation fetchInformation(URI url);
 
-    LinkInformation filter(LinkInformation info, OffsetDateTime after, String optionalMetaInfo);
+    LinkInformation filter(LinkInformation info, OffsetDateTime after);
 
-    default LinkInformation filter(LinkInformation info, OffsetDateTime after) {
-        return filter(info, after, null);
-    }
 }

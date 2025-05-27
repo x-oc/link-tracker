@@ -26,6 +26,11 @@ public class TrackCommand implements Command {
     }
 
     @Override
+    public String commandWithArguments() {
+        return "/track <link>";
+    }
+
+    @Override
     public String description() {
         return "start tracking the link";
     }
@@ -47,7 +52,10 @@ public class TrackCommand implements Command {
             return "Invalid link";
         }
         String response = linksStorage.addUserLink(arguments.chatId(), arguments.userArguments(), null, null);
-        if (response == null || !response.equals(BotResponses.ADD_USER_LINK_SUCCESS.message)) {
+        if (response == null) {
+            return "Scrapper is dead";
+        }
+        if (!response.equals(BotResponses.ADD_USER_LINK_SUCCESS.message)) {
             return response;
         }
 

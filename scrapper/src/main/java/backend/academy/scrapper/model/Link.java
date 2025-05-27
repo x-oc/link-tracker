@@ -17,7 +17,6 @@ public class Link {
     private List<String> filters;
     private OffsetDateTime lastChecked;
     private OffsetDateTime lastUpdated;
-    private String metaInformation;
 
     public Link(
             String url,
@@ -38,14 +37,12 @@ public class Link {
             List<String> tags,
             List<String> filters,
             OffsetDateTime lastChecked,
-            OffsetDateTime lastUpdated,
-            String metaInformation) {
+            OffsetDateTime lastUpdated) {
         this.id = id;
         this.url = url;
         this.tags = tags;
         this.filters = filters;
         this.lastChecked = lastChecked;
         this.lastUpdated = lastUpdated;
-        this.metaInformation = metaInformation;
     }
 }

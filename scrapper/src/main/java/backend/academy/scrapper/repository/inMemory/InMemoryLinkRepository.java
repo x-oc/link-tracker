@@ -68,12 +68,11 @@ public class InMemoryLinkRepository {
         }
     }
 
-    public void update(String url, OffsetDateTime lastUpdated, String info) {
+    public void update(String url, OffsetDateTime lastUpdated) {
         for (Link link : links) {
             if (Objects.equals(link.url(), url)) {
                 link.lastChecked(OffsetDateTime.now());
                 link.lastUpdated(lastUpdated);
-                link.metaInformation(info);
             }
         }
     }

@@ -20,5 +20,5 @@ public interface LinkRepository {
 
     void checkNow(String url);
 
-    void update(String url, OffsetDateTime lastModified, String info);
+    void update(String url, OffsetDateTime lastModified);
 }
