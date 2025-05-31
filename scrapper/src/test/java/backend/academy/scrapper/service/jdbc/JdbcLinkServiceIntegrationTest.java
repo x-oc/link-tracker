@@ -1,9 +1,5 @@
 package backend.academy.scrapper.service.jdbc;
 
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Map;
 import backend.academy.scrapper.api.InformationProvider;
 import backend.academy.scrapper.api.LinkInformation;
 import backend.academy.scrapper.api.github.GithubProvider;
@@ -14,13 +10,16 @@ import backend.academy.scrapper.repository.jdbc.JdbcChatLinkRepository;
 import backend.academy.scrapper.repository.jdbc.JdbcLinkRepository;
 import backend.academy.scrapper.service.ChatService;
 import backend.academy.scrapper.service.LinkService;
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -39,6 +38,7 @@ public class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
 
     @MockitoBean
     private GithubProvider provider;
+
     @MockitoBean
     private Map<String, InformationProvider> providers;
 
@@ -48,7 +48,7 @@ public class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     void addLinkShouldAddLinkAndCreateIfNotExists() {
         String url = "https://github.com/x-oc/test-repo";
         Mockito.when(provider.fetchInformation(Mockito.any()))
-            .thenReturn(new LinkInformation(URI.create(url), "github", List.of()));
+                .thenReturn(new LinkInformation(URI.create(url), "github", List.of()));
         Mockito.when(provider.isSupported(Mockito.any())).thenReturn(true);
         Mockito.when(providers.get(Mockito.any())).thenReturn(provider);
 
@@ -56,10 +56,10 @@ public class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         System.out.println(linkRepository.findAll());
         linkService.addLink(URI.create(url), 123L, List.of(), List.of());
 
-        Assertions.assertThat(linkRepository.findByUrl(url).orElseThrow().url())
-            .isEqualTo(url);
-        Assertions.assertThat(chatLinkRepository.findAllByChatId(123L)).map(Link::url)
-            .contains(url);
+        Assertions.assertThat(linkRepository.findByUrl(url).orElseThrow().url()).isEqualTo(url);
+        Assertions.assertThat(chatLinkRepository.findAllByChatId(123L))
+                .map(Link::url)
+                .contains(url);
     }
 
     @Test
@@ -67,8 +67,7 @@ public class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     void getLinkSubscriberShouldCorrectlyWork() {
         chatService.registerChat(123L);
-        var id = linkRepository.add(
-            new Link("url", List.of(), List.of(), OffsetDateTime.now(), OffsetDateTime.now()));
+        var id = linkRepository.add(new Link("url", List.of(), List.of(), OffsetDateTime.now(), OffsetDateTime.now()));
         chatLinkRepository.add(123L, id);
 
         var response = linkService.getLinkSubscribers(id);
@@ -82,7 +81,7 @@ public class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         chatService.registerChat(123L);
 
         Assertions.assertThatThrownBy(() -> linkService.removeLink("1", 123L))
-            .isInstanceOf(LinkNotFoundException.class);
+                .isInstanceOf(LinkNotFoundException.class);
     }
 
     @DynamicPropertySource

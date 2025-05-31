@@ -74,8 +74,7 @@ public class JpaLinkService implements LinkService {
             chat.addLink(linkEntity);
             return new LinkResponse(linkEntity.id(), link, new ArrayList<>(), new ArrayList<>());
         }
-        var linkEntity =
-                new LinkEntity(link.toString(), lastModified, OffsetDateTime.now());
+        var linkEntity = new LinkEntity(link.toString(), lastModified, OffsetDateTime.now());
         linkRepository.save(linkEntity);
         chat.addLink(linkEntity);
         if (tags != null) {

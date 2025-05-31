@@ -7,9 +7,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import backend.academy.scrapper.api.LinkInformation;
+import backend.academy.scrapper.api.LinkUpdateEvent;
 import backend.academy.scrapper.config.ScrapperConfig;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.net.URI;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,8 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class GithubInformationProviderTest {
 
     private static GithubProvider provider;
-    private static final ScrapperConfig EMPTY_CONFIG =
-        new ScrapperConfig(null, null, null, null, null);
+    private static final ScrapperConfig EMPTY_CONFIG = new ScrapperConfig(null, null, null, null, null);
 
     @BeforeAll
     public static void setUp() {
@@ -42,9 +43,16 @@ public class GithubInformationProviderTest {
     @Test
     public void getInformationShouldReturnCorrectInformation() {
         var info = provider.fetchInformation(new URI("https://github.com/x-oc/test-repo"));
+        var correctInfo = List.of(
+                "User x-oc opened new Issue or Pull Request 'PR that finally works!': That one PR",
+                "User x-oc opened new Issue or Pull Request 'The one Issue': Issue that will finally work",
+                "User x-oc opened new Issue or Pull Request 'New issue': Description for the issue",
+                "User x-oc opened new Issue or Pull Request 'Title': Description");
+
         Assertions.assertThat(info)
                 .extracting(LinkInformation::url, LinkInformation::title)
                 .contains(new URI("https://github.com/x-oc/test-repo"), "test-repo");
+        Assertions.assertThat(info.events()).map(LinkUpdateEvent::description).containsAll(correctInfo);
     }
 
     @SneakyThrows

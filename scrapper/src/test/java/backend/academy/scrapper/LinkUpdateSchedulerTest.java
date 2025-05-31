@@ -95,8 +95,7 @@ class LinkUpdateSchedulerTest {
         LinkInformation linkInformation =
                 new LinkInformation(URI.create(url), "Программа на python для решения СЛАУ", List.of());
         when(provider.fetchInformation(URI.create(url))).thenReturn(linkInformation);
-        when(provider.filter(linkInformation, link.lastUpdated()))
-                .thenReturn(linkInformation);
+        when(provider.filter(linkInformation, link.lastUpdated())).thenReturn(linkInformation);
 
         linkUpdateScheduler.update();
 

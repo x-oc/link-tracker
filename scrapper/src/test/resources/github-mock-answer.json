@@ -1,94 +1,309 @@
 [
     {
-        "id": "47156321573",
-        "type": "PushEvent",
-        "actor": {
-            "id": 180064861,
+        "url": "https://api.github.com/repos/x-oc/test-repo/issues/7",
+        "repository_url": "https://api.github.com/repos/x-oc/test-repo",
+        "labels_url": "https://api.github.com/repos/x-oc/test-repo/issues/7/labels{/name}",
+        "comments_url": "https://api.github.com/repos/x-oc/test-repo/issues/7/comments",
+        "events_url": "https://api.github.com/repos/x-oc/test-repo/issues/7/events",
+        "html_url": "https://github.com/x-oc/test-repo/pull/7",
+        "id": 3092257400,
+        "node_id": "PR_kwDOOrEzt86Xsapj",
+        "number": 7,
+        "title": "PR that finally works!",
+        "user": {
             "login": "x-oc",
-            "display_login": "x-oc",
+            "id": 180064861,
+            "node_id": "U_kgDOCruSXQ",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?v=4",
             "gravatar_id": "",
             "url": "https://api.github.com/users/x-oc",
-            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?"
+            "html_url": "https://github.com/x-oc",
+            "followers_url": "https://api.github.com/users/x-oc/followers",
+            "following_url": "https://api.github.com/users/x-oc/following{/other_user}",
+            "gists_url": "https://api.github.com/users/x-oc/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/x-oc/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/x-oc/subscriptions",
+            "organizations_url": "https://api.github.com/users/x-oc/orgs",
+            "repos_url": "https://api.github.com/users/x-oc/repos",
+            "events_url": "https://api.github.com/users/x-oc/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/x-oc/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
         },
-        "repo": {
-            "id": 939445316,
-            "name": "x-oc/slae-solutions",
-            "url": "https://api.github.com/repos/x-oc/slae-solutions"
+        "labels": [
+
+        ],
+        "state": "open",
+        "locked": false,
+        "assignee": null,
+        "assignees": [
+
+        ],
+        "milestone": null,
+        "comments": 0,
+        "created_at": "2025-05-27T00:36:35Z",
+        "updated_at": "2025-05-27T00:36:35Z",
+        "closed_at": null,
+        "author_association": "OWNER",
+        "active_lock_reason": null,
+        "draft": false,
+        "pull_request": {
+            "url": "https://api.github.com/repos/x-oc/test-repo/pulls/7",
+            "html_url": "https://github.com/x-oc/test-repo/pull/7",
+            "diff_url": "https://github.com/x-oc/test-repo/pull/7.diff",
+            "patch_url": "https://github.com/x-oc/test-repo/pull/7.patch",
+            "merged_at": null
         },
-        "payload": {
-            "repository_id": 939445316,
-            "push_id": 22963197283,
-            "size": 1,
-            "distinct_size": 1,
-            "ref": "refs/heads/main",
-            "head": "61d282a809d283e288a1fac04ca1e92875559b83",
-            "before": "2df7495643ccc3e1ff10cfca20825bf49ca48468",
-            "commits": [
-                {
-                    "sha": "61d282a809d283e288a1fac04ca1e92875559b83",
-                    "author": {
-                        "email": "vovaess@gmail.com",
-                        "name": "x-oc"
-                    },
-                    "message": "Create README.md",
-                    "distinct": true,
-                    "url": "https://api.github.com/repos/x-oc/slae-solutions/commits/61d282a809d283e288a1fac04ca1e92875559b83"
-                }
-            ]
+        "body": "That one PR",
+        "closed_by": null,
+        "reactions": {
+            "url": "https://api.github.com/repos/x-oc/test-repo/issues/7/reactions",
+            "total_count": 0,
+            "+1": 0,
+            "-1": 0,
+            "laugh": 0,
+            "hooray": 0,
+            "confused": 0,
+            "heart": 0,
+            "rocket": 0,
+            "eyes": 0
         },
-        "public": true,
-        "created_at": "2025-03-03T22:08:32Z"
+        "timeline_url": "https://api.github.com/repos/x-oc/test-repo/issues/7/timeline",
+        "performed_via_github_app": null,
+        "state_reason": null
     },
     {
-        "id": "46985412042",
-        "type": "CreateEvent",
-        "actor": {
-            "id": 180064861,
+        "url": "https://api.github.com/repos/x-oc/test-repo/issues/6",
+        "repository_url": "https://api.github.com/repos/x-oc/test-repo",
+        "labels_url": "https://api.github.com/repos/x-oc/test-repo/issues/6/labels{/name}",
+        "comments_url": "https://api.github.com/repos/x-oc/test-repo/issues/6/comments",
+        "events_url": "https://api.github.com/repos/x-oc/test-repo/issues/6/events",
+        "html_url": "https://github.com/x-oc/test-repo/issues/6",
+        "id": 3092230187,
+        "node_id": "I_kwDOOrEzt864T7Ar",
+        "number": 6,
+        "title": "The one Issue",
+        "user": {
             "login": "x-oc",
-            "display_login": "x-oc",
+            "id": 180064861,
+            "node_id": "U_kgDOCruSXQ",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?v=4",
             "gravatar_id": "",
             "url": "https://api.github.com/users/x-oc",
-            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?"
+            "html_url": "https://github.com/x-oc",
+            "followers_url": "https://api.github.com/users/x-oc/followers",
+            "following_url": "https://api.github.com/users/x-oc/following{/other_user}",
+            "gists_url": "https://api.github.com/users/x-oc/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/x-oc/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/x-oc/subscriptions",
+            "organizations_url": "https://api.github.com/users/x-oc/orgs",
+            "repos_url": "https://api.github.com/users/x-oc/repos",
+            "events_url": "https://api.github.com/users/x-oc/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/x-oc/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
         },
-        "repo": {
-            "id": 939445316,
-            "name": "x-oc/slae-solutions",
-            "url": "https://api.github.com/repos/x-oc/slae-solutions"
+        "labels": [
+
+        ],
+        "state": "open",
+        "locked": false,
+        "assignee": null,
+        "assignees": [
+
+        ],
+        "milestone": null,
+        "comments": 0,
+        "created_at": "2025-05-27T00:05:51Z",
+        "updated_at": "2025-05-27T00:05:51Z",
+        "closed_at": null,
+        "author_association": "OWNER",
+        "active_lock_reason": null,
+        "sub_issues_summary": {
+            "total": 0,
+            "completed": 0,
+            "percent_completed": 0
         },
-        "payload": {
-            "ref": "main",
-            "ref_type": "branch",
-            "master_branch": "main",
-            "description": "Программа Python для решения систем линейных алгебраических уравнений методом простых итераций.",
-            "pusher_type": "user"
+        "body": "Issue that will finally work",
+        "closed_by": null,
+        "reactions": {
+            "url": "https://api.github.com/repos/x-oc/test-repo/issues/6/reactions",
+            "total_count": 0,
+            "+1": 0,
+            "-1": 0,
+            "laugh": 0,
+            "hooray": 0,
+            "confused": 0,
+            "heart": 0,
+            "rocket": 0,
+            "eyes": 0
         },
-        "public": true,
-        "created_at": "2025-02-26T14:55:46Z"
+        "timeline_url": "https://api.github.com/repos/x-oc/test-repo/issues/6/timeline",
+        "performed_via_github_app": null,
+        "state_reason": null
     },
     {
-        "id": "46985369460",
-        "type": "CreateEvent",
-        "actor": {
-            "id": 180064861,
+        "url": "https://api.github.com/repos/x-oc/test-repo/issues/5",
+        "repository_url": "https://api.github.com/repos/x-oc/test-repo",
+        "labels_url": "https://api.github.com/repos/x-oc/test-repo/issues/5/labels{/name}",
+        "comments_url": "https://api.github.com/repos/x-oc/test-repo/issues/5/comments",
+        "events_url": "https://api.github.com/repos/x-oc/test-repo/issues/5/events",
+        "html_url": "https://github.com/x-oc/test-repo/issues/5",
+        "id": 3091622863,
+        "node_id": "I_kwDOOrEzt864RmvP",
+        "number": 5,
+        "title": "New issue",
+        "user": {
             "login": "x-oc",
-            "display_login": "x-oc",
+            "id": 180064861,
+            "node_id": "U_kgDOCruSXQ",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?v=4",
             "gravatar_id": "",
             "url": "https://api.github.com/users/x-oc",
-            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?"
+            "html_url": "https://github.com/x-oc",
+            "followers_url": "https://api.github.com/users/x-oc/followers",
+            "following_url": "https://api.github.com/users/x-oc/following{/other_user}",
+            "gists_url": "https://api.github.com/users/x-oc/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/x-oc/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/x-oc/subscriptions",
+            "organizations_url": "https://api.github.com/users/x-oc/orgs",
+            "repos_url": "https://api.github.com/users/x-oc/repos",
+            "events_url": "https://api.github.com/users/x-oc/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/x-oc/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
         },
-        "repo": {
-            "id": 939445316,
-            "name": "x-oc/slae-solutions",
-            "url": "https://api.github.com/repos/x-oc/slae-solutions"
+        "labels": [
+
+        ],
+        "state": "open",
+        "locked": false,
+        "assignee": null,
+        "assignees": [
+
+        ],
+        "milestone": null,
+        "comments": 0,
+        "created_at": "2025-05-26T16:11:37Z",
+        "updated_at": "2025-05-26T16:11:37Z",
+        "closed_at": null,
+        "author_association": "OWNER",
+        "active_lock_reason": null,
+        "sub_issues_summary": {
+            "total": 0,
+            "completed": 0,
+            "percent_completed": 0
         },
-        "payload": {
-            "ref": null,
-            "ref_type": "repository",
-            "master_branch": "main",
-            "description": "Программа Python для решения систем линейных алгебраических уравнений методом простых итераций.",
-            "pusher_type": "user"
+        "body": "Description for the issue",
+        "closed_by": null,
+        "reactions": {
+            "url": "https://api.github.com/repos/x-oc/test-repo/issues/5/reactions",
+            "total_count": 0,
+            "+1": 0,
+            "-1": 0,
+            "laugh": 0,
+            "hooray": 0,
+            "confused": 0,
+            "heart": 0,
+            "rocket": 0,
+            "eyes": 0
         },
-        "public": true,
-        "created_at": "2025-02-26T14:54:52Z"
+        "timeline_url": "https://api.github.com/repos/x-oc/test-repo/issues/5/timeline",
+        "performed_via_github_app": null,
+        "state_reason": null
+    },
+    {
+        "url": "https://api.github.com/repos/x-oc/test-repo/issues/1",
+        "repository_url": "https://api.github.com/repos/x-oc/test-repo",
+        "labels_url": "https://api.github.com/repos/x-oc/test-repo/issues/1/labels{/name}",
+        "comments_url": "https://api.github.com/repos/x-oc/test-repo/issues/1/comments",
+        "events_url": "https://api.github.com/repos/x-oc/test-repo/issues/1/events",
+        "html_url": "https://github.com/x-oc/test-repo/issues/1",
+        "id": 3068664949,
+        "node_id": "I_kwDOOrEzt8626Bx1",
+        "number": 1,
+        "title": "Title",
+        "user": {
+            "login": "x-oc",
+            "id": 180064861,
+            "node_id": "U_kgDOCruSXQ",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/x-oc",
+            "html_url": "https://github.com/x-oc",
+            "followers_url": "https://api.github.com/users/x-oc/followers",
+            "following_url": "https://api.github.com/users/x-oc/following{/other_user}",
+            "gists_url": "https://api.github.com/users/x-oc/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/x-oc/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/x-oc/subscriptions",
+            "organizations_url": "https://api.github.com/users/x-oc/orgs",
+            "repos_url": "https://api.github.com/users/x-oc/repos",
+            "events_url": "https://api.github.com/users/x-oc/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/x-oc/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+        },
+        "labels": [
+
+        ],
+        "state": "open",
+        "locked": false,
+        "assignee": null,
+        "assignees": [
+
+        ],
+        "milestone": null,
+        "comments": 0,
+        "created_at": "2025-05-16T10:52:07Z",
+        "updated_at": "2025-05-27T00:03:46Z",
+        "closed_at": null,
+        "author_association": "OWNER",
+        "active_lock_reason": null,
+        "sub_issues_summary": {
+            "total": 0,
+            "completed": 0,
+            "percent_completed": 0
+        },
+        "body": "Description",
+        "closed_by": {
+            "login": "x-oc",
+            "id": 180064861,
+            "node_id": "U_kgDOCruSXQ",
+            "avatar_url": "https://avatars.githubusercontent.com/u/180064861?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/x-oc",
+            "html_url": "https://github.com/x-oc",
+            "followers_url": "https://api.github.com/users/x-oc/followers",
+            "following_url": "https://api.github.com/users/x-oc/following{/other_user}",
+            "gists_url": "https://api.github.com/users/x-oc/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/x-oc/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/x-oc/subscriptions",
+            "organizations_url": "https://api.github.com/users/x-oc/orgs",
+            "repos_url": "https://api.github.com/users/x-oc/repos",
+            "events_url": "https://api.github.com/users/x-oc/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/x-oc/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+        },
+        "reactions": {
+            "url": "https://api.github.com/repos/x-oc/test-repo/issues/1/reactions",
+            "total_count": 0,
+            "+1": 0,
+            "-1": 0,
+            "laugh": 0,
+            "hooray": 0,
+            "confused": 0,
+            "heart": 0,
+            "rocket": 0,
+            "eyes": 0
+        },
+        "timeline_url": "https://api.github.com/repos/x-oc/test-repo/issues/1/timeline",
+        "performed_via_github_app": null,
+        "state_reason": "reopened"
     }
 ]

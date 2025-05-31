@@ -21,23 +21,19 @@ public abstract class IntegrationEnvironment {
 
     static {
         POSTGRES = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("scrapper")
-            .withUsername("postgres")
-            .withPassword("postgres");
+                .withDatabaseName("scrapper")
+                .withUsername("postgres")
+                .withPassword("postgres");
         POSTGRES.start();
         runMigrations(POSTGRES);
-
     }
 
     @SneakyThrows
     private static void runMigrations(JdbcDatabaseContainer<?> container) {
         Database database = DatabaseFactory.getInstance()
-            .findCorrectDatabaseImplementation(new JdbcConnection(container.createConnection("")));
-        Liquibase liquibase = new Liquibase(
-            "master.xml",
-            new DirectoryResourceAccessor(Path.of("../migrations")),
-            database
-        );
+                .findCorrectDatabaseImplementation(new JdbcConnection(container.createConnection("")));
+        Liquibase liquibase =
+                new Liquibase("master.xml", new DirectoryResourceAccessor(Path.of("../migrations")), database);
         liquibase.update();
     }
 

@@ -30,8 +30,10 @@ public class JpaChatServiceTest extends IntegrationEnvironment {
     public void registerShouldCreateChatInDatabase() {
         chatService.registerChat(10L);
         manager.flush();
-        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM chat WHERE id = 10").query(Long.class).single())
-            .isEqualTo(1L);
+        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM chat WHERE id = 10")
+                        .query(Long.class)
+                        .single())
+                .isEqualTo(1L);
     }
 
     @Test
@@ -40,26 +42,34 @@ public class JpaChatServiceTest extends IntegrationEnvironment {
     public void deleteShouldRemoveChatFromDatabaseAndRelatedLinks() {
         client.sql("INSERT INTO chat (id) VALUES (10)").update();
         var link1 = client.sql("INSERT INTO link (url) VALUES ('https://example.com') RETURNING id")
-            .query(Long.class)
-            .single();
+                .query(Long.class)
+                .single();
         var link2 = client.sql("INSERT INTO link (url) VALUES ('https://example2.com') RETURNING id")
-            .query(Long.class)
-            .single();
-        client.sql("INSERT INTO chat_link (chat_id, link_id) VALUES (10, ?)").params(link1).update();
+                .query(Long.class)
+                .single();
+        client.sql("INSERT INTO chat_link (chat_id, link_id) VALUES (10, ?)")
+                .params(link1)
+                .update();
 
         // When
         chatService.deleteChat(10L);
         manager.flush();
 
         // Then
-        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM chat WHERE id = 10").query(Long.class).single())
-            .isEqualTo(0L);
-        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM link WHERE id = ?").params(link1).query(Long.class)
-                .single())
-            .isEqualTo(0L);
-        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM link WHERE id = ?").params(link2).query(Long.class)
-                .single())
-            .isEqualTo(1L);
+        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM chat WHERE id = 10")
+                        .query(Long.class)
+                        .single())
+                .isEqualTo(0L);
+        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM link WHERE id = ?")
+                        .params(link1)
+                        .query(Long.class)
+                        .single())
+                .isEqualTo(0L);
+        Assertions.assertThat(client.sql("SELECT COUNT(*) FROM link WHERE id = ?")
+                        .params(link2)
+                        .query(Long.class)
+                        .single())
+                .isEqualTo(1L);
     }
 
     @DynamicPropertySource

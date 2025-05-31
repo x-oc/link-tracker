@@ -6,7 +6,7 @@ public enum BotResponses {
     ADD_USER_LINK_SUCCESS("Link added successfully!"),
     REMOVE_USER_LINK_SUCCESS("Link removed successfully!"),
     REMOVE_USER_LINK_FAIL("Invalid link!"),
-    FAIL("Unexpected error!"),;
+    FAIL("Unexpected error!");
 
     public final String message;
 

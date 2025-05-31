@@ -67,9 +67,9 @@ public class RemoteLinksStorage implements LinksStorage {
             var linkDTOs = response.links();
             if (linkDTOs == null) {
                 log.atWarn()
-                    .setMessage("Error response while trying get user link.")
-                    .addKeyValue("chatId", chatId)
-                    .log();
+                        .setMessage("Error response while trying get user link.")
+                        .addKeyValue("chatId", chatId)
+                        .log();
                 return links;
             }
             for (var link : linkDTOs) {
@@ -84,30 +84,31 @@ public class RemoteLinksStorage implements LinksStorage {
     private String handleScrapperClientException(Exception e, Long chatId, String action) {
         if (e instanceof WebClientResponseException webClientResponseException) {
             log.atWarn()
-                .setMessage("Error while getting response from scrapper.")
-                .addKeyValue("action", action)
-                .addKeyValue("statusCode", webClientResponseException.getStatusCode())
-                .addKeyValue("message", webClientResponseException.getResponseBodyAsString())
-                .addKeyValue("chatId", chatId)
-                .log();
+                    .setMessage("Error while getting response from scrapper.")
+                    .addKeyValue("action", action)
+                    .addKeyValue("statusCode", webClientResponseException.getStatusCode())
+                    .addKeyValue("message", webClientResponseException.getResponseBodyAsString())
+                    .addKeyValue("chatId", chatId)
+                    .log();
             return webClientResponseException.getResponseBodyAsString();
         } else if (e instanceof ApiErrorException apiErrorException) {
             log.atWarn()
-                .setMessage("Error response from scrapper.")
-                .addKeyValue("action", action)
-                .addKeyValue("statusCode", apiErrorException.getErrorResponse().code())
-                .addKeyValue("message", apiErrorException.getErrorResponse().exceptionMessage())
-                .addKeyValue("chatId", chatId)
-                .log();
+                    .setMessage("Error response from scrapper.")
+                    .addKeyValue("action", action)
+                    .addKeyValue(
+                            "statusCode", apiErrorException.getErrorResponse().code())
+                    .addKeyValue("message", apiErrorException.getErrorResponse().exceptionMessage())
+                    .addKeyValue("chatId", chatId)
+                    .log();
             return apiErrorException.getErrorResponse().exceptionMessage();
         } else {
             log.atWarn()
-                .setMessage("Unknown error while getting response from scrapper.")
-                .addKeyValue("action", action)
-                .addKeyValue("stackTrace", e.getStackTrace())
-                .addKeyValue("message", e.getMessage())
-                .addKeyValue("chatId", chatId)
-                .log();
+                    .setMessage("Unknown error while getting response from scrapper.")
+                    .addKeyValue("action", action)
+                    .addKeyValue("stackTrace", e.getStackTrace())
+                    .addKeyValue("message", e.getMessage())
+                    .addKeyValue("chatId", chatId)
+                    .log();
             return BotResponses.FAIL.message;
         }
     }

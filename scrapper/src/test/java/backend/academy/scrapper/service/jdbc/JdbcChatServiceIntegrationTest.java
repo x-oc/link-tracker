@@ -38,7 +38,7 @@ public class JdbcChatServiceIntegrationTest extends IntegrationEnvironment {
     void registerChatShouldThrowExceptionWhenChatAlreadyExists() {
         chatService.registerChat(123L);
         Assertions.assertThatThrownBy(() -> chatService.registerChat(123L))
-            .isInstanceOf(ChatAlreadyRegisteredException.class);
+                .isInstanceOf(ChatAlreadyRegisteredException.class);
     }
 
     @Test
@@ -54,8 +54,7 @@ public class JdbcChatServiceIntegrationTest extends IntegrationEnvironment {
     @Transactional
     @Rollback
     void removeChatShouldThrowExceptionWhenChatNotExists() {
-        Assertions.assertThatThrownBy(() -> chatService.deleteChat(123L))
-            .isInstanceOf(ChatNotFoundException.class);
+        Assertions.assertThatThrownBy(() -> chatService.deleteChat(123L)).isInstanceOf(ChatNotFoundException.class);
     }
 
     @DynamicPropertySource

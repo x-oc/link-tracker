@@ -55,24 +55,16 @@ public class DatabaseConfig {
             JpaTagRepository jpaTagRepository) {
         if (scrapperConfig.databaseAccessType().equalsIgnoreCase("jdbc")) {
             return new JdbcLinkService(
-                linkRepository,
-                tgChatLinkRepository,
-                jdbcTagRepository,
-                jdbcFilterRepository,
-                informationProviders);
+                    linkRepository,
+                    tgChatLinkRepository,
+                    jdbcTagRepository,
+                    jdbcFilterRepository,
+                    informationProviders);
         } else if (scrapperConfig.databaseAccessType().equalsIgnoreCase("jpa")) {
             return new JpaLinkService(
-                jpaLinkRepository,
-                jpaChatRepository,
-                jpaTagRepository,
-                jpaFilterRepository,
-                informationProviders);
+                    jpaLinkRepository, jpaChatRepository, jpaTagRepository, jpaFilterRepository, informationProviders);
         }
         return new JpaLinkService(
-            jpaLinkRepository,
-            jpaChatRepository,
-            jpaTagRepository,
-            jpaFilterRepository,
-            informationProviders);
+                jpaLinkRepository, jpaChatRepository, jpaTagRepository, jpaFilterRepository, informationProviders);
     }
 }

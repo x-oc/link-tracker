@@ -55,9 +55,26 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<String> handleException(WebClientResponseException ex) {
-        ApiErrorResponse error = ex.getResponseBodyAs(ApiErrorResponse.class);
-        String errorMessage = error.exceptionMessage();
-        return ResponseEntity.status(ex.getStatusCode()).body(errorMessage);
+        try {
+            ApiErrorResponse error = ex.getResponseBodyAs(ApiErrorResponse.class);
+            if (error != null) {
+                String errorMessage = error.exceptionMessage();
+                return ResponseEntity.status(ex.getStatusCode()).body(errorMessage);
+            } else {
+                log.atError()
+                        .setMessage("Unknown exception occurred while handling exception.")
+                        .addKeyValue("exception", "Exception is null")
+                        .log();
+                return ResponseEntity.status(HttpStatusCode.valueOf(500)).body("Unknown Error");
+            }
+
+        } catch (Exception e) {
+            log.atError()
+                    .setMessage("Exception occurred while handling exception.")
+                    .addKeyValue("exception", e.getMessage())
+                    .log();
+            return ResponseEntity.status(HttpStatusCode.valueOf(500)).body("Unknown Error");
+        }
     }
 
     private ResponseEntity<Object> handleIncorrectRequest(Exception ex, HttpStatusCode status) {

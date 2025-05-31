@@ -21,8 +21,7 @@ public class ClientConfig {
     @Bean
     public ScrapperClient scrapperClient(WebClient.Builder webClientBuilder) {
         WebClient webClient = webClientBuilder
-                .defaultStatusHandler(HttpStatusCode::isError,
-                    resp -> resp.bodyToMono(ApiErrorResponse.class)
+                .defaultStatusHandler(HttpStatusCode::isError, resp -> resp.bodyToMono(ApiErrorResponse.class)
                         .flatMap(error -> Mono.error(new ApiErrorException(error))))
                 .defaultHeader("Content-Type", "application/json")
                 .baseUrl(scrapperUrl)

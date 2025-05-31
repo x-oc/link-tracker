@@ -12,5 +12,4 @@ public interface TagRepository {
     void add(long linkId, String tag);
 
     void removeByLinkId(long linkId);
-
 }

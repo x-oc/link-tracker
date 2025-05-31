@@ -112,12 +112,12 @@
             <artifactId>kafka</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>backend.academy</groupId>-->
-<!--            <artifactId>scrapper</artifactId>-->
-<!--            <version>1.0</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>backend.academy</groupId>-->
+        <!--            <artifactId>scrapper</artifactId>-->
+        <!--            <version>1.0</version>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>backend.academy</groupId>
             <artifactId>scrapper</artifactId>

@@ -1,0 +1,66 @@
+{
+    "items": [
+        {
+            "owner": {
+                "account_id": 29924697,
+                "reputation": 143,
+                "user_id": 22933009,
+                "user_type": "registered",
+                "profile_image": "https://lh3.googleusercontent.com/a/ACg8ocLhEF1Rsa3DT5ytiFf0QLiha1q1vhxuxWk8qT6dmIUd=k-s256",
+                "display_name": "lei zhang",
+                "link": "https://stackoverflow.com/users/22933009/lei-zhang"
+            },
+            "is_accepted": false,
+            "score": 0,
+            "last_activity_date": 1747446335,
+            "last_edit_date": 1747446335,
+            "creation_date": 1747389154,
+            "answer_id": 79624931,
+            "question_id": 3648564,
+            "content_license": "CC BY-SA 4.0",
+            "body": "\u003Cp\u003EYou can use \u003Ccode\u003Emetaclass\u003C/code\u003E\u003C/p\u003E\n\u003Cpre class=\"lang-py prettyprint-override\"\u003E\u003Ccode\u003Eclass A(object):\n    print(&quot;in A&quot;)\n    x = 0\n\nclass B_meta(type):\n    def __init__(cls, cls_name, bases, attrs):\n        print(&quot;in meta&quot;)\n        cls.y = cls.x + 1\n\nclass B(A, metaclass=B_meta):\n    print(&quot;in B&quot;)\n\u003C/code\u003E\u003C/pre\u003E\n\u003Cp\u003Eprint:\u003C/p\u003E\n\u003Cpre\u003E\u003Ccode\u003Ein A\nin B\nin meta\n\u003C/code\u003E\u003C/pre\u003E\n"
+        },
+        {
+            "owner": {
+                "account_id": 34048,
+                "reputation": 884594,
+                "user_id": 95810,
+                "user_type": "registered",
+                "accept_rate": 80,
+                "profile_image": "https://www.gravatar.com/avatar/e8d5fe90f1fe2148bf130cccd4dc311c?s=256&d=identicon&r=PG",
+                "display_name": "Alex Martelli",
+                "link": "https://stackoverflow.com/users/95810/alex-martelli"
+            },
+            "is_accepted": false,
+            "score": 53,
+            "last_activity_date": 1283740089,
+            "creation_date": 1283740089,
+            "answer_id": 3648704,
+            "question_id": 3648564,
+            "content_license": "CC BY-SA 2.5",
+            "body": "\u003Cp\u003EPython's scoping rules for barenames are very simple and straightforward: local namespace first, then (if any) outer functions in which the current one is nested, then globals, finally built-ins.  That's all that ever happens when a barename is looked up, and there's no need to memorize or apply any complicated rules (nor is there any need for a Python compiler to enforce more complicated rules).\u003C/p\u003E\n\n\u003Cp\u003EAny time you want a different lookup, you'll be using a \u003Cstrong\u003Equalified\u003C/strong\u003E name, not a \u003Cstrong\u003Ebare\u003C/strong\u003E name.  Qualified names are vastly more powerful because the lookup can always be delegated to the objects whose attributes can be requested, and those object can implement whatever lookup rules they need.  In particular, in an instance method within a class, \u003Ccode\u003Eself.x\u003C/code\u003E is \u003Cem\u003Ethe\u003C/em\u003E way to ask the \u003Ccode\u003Eself\u003C/code\u003E object to look up attribute name \u003Ccode\u003E'x'\u003C/code\u003E -- and in that lookup it can delegate to classes, including the implementation of the concept of inheritance (and multiple inheritance, method resolution order, and so on).\u003C/p\u003E\n\n\u003Cp\u003EThe \u003Cem\u003Ebody\u003C/em\u003E of a class (as opposed to the bodies of the methods defined in a class) executes as part of the \u003Ccode\u003Eclass\u003C/code\u003E statement, \u003Cstrong\u003Ebefore\u003C/strong\u003E the class object is created or its name is bound (in particular, before any of the bases have been defined as being bases -- though this latest detail can never matter when referring to barenames, anyway!-).\u003C/p\u003E\n\n\u003Cp\u003ESo, in your example, in class \u003Ccode\u003EB\u003C/code\u003E, barename \u003Ccode\u003Ex\u003C/code\u003E is looked up with the universal rules -- is it a name bound locally?  If no, is it bound in any outer function in which this scope is nested?  If no, is it bound as a global or built-in?  If none of the above, using the barename in question of course causes a name-error exception.\u003C/p\u003E\n\n\u003Cp\u003ESince you want a different lookup sequence than the barename lookup rules universally enforce, then clearly you need to use a qualified name, not a barename; and a moment's reflection will clearly show that the \"one obvious choice\" for a qualified name to use for your purpose has to be \u003Ccode\u003EA.x\u003C/code\u003E -- since that's where you \u003Cem\u003Ewant\u003C/em\u003E it to be looked up (the bases haven't been recorded anywhere \u003Cem\u003Eyet\u003C/em\u003E at that point, after all... it will be the metaclass, normally \u003Ccode\u003Etype\u003C/code\u003E, that will do the bases-binding as part of its job when it gets called \u003Cem\u003Eafter\u003C/em\u003E the class body is done executing!-).\u003C/p\u003E\n\n\u003Cp\u003ESome people are so keenly attached to other \"magical\" rules for the lookup of barenames that they just can't stand this aspect of Python (originally inspired, I believe, by Modula-3, a little known language that's very well considered in theoreticians' circles;-) -- having to write \u003Ccode\u003Eself.x\u003C/code\u003E in a method to specify that \u003Ccode\u003Ex\u003C/code\u003E must be looked up on \u003Ccode\u003Eself\u003C/code\u003E rather than using the universal  barename rules, for example, drives such people batty.\u003C/p\u003E\n\n\u003Cp\u003EMe, I love the simplicity and universality of the barename lookup rules, and I love using qualified names instead of barenames any time I want \u003Cem\u003Eany\u003C/em\u003E other form of lookup... but then, it's not a secret that I'm madly in love with Python (I have my own grumbles -- e.g., \u003Ccode\u003Eglobal x\u003C/code\u003E as a statement always makes my skin crawl, where I'd much rather write \u003Ccode\u003Eglobal.x\u003C/code\u003E, i.e., have \u003Ccode\u003Eglobal\u003C/code\u003E be a built-in name for \"the currently executing module\"... I \u003Cstrong\u003Edo\u003C/strong\u003E love qualified names!-), is it?-)\u003C/p\u003E\n"
+        },
+        {
+            "owner": {
+                "account_id": 196704,
+                "reputation": 5776,
+                "user_id": 440294,
+                "user_type": "registered",
+                "profile_image": "https://www.gravatar.com/avatar/d6f9b4bd073537b03827fe2047aa4c91?s=256&d=identicon&r=PG",
+                "display_name": "Nathan Davis",
+                "link": "https://stackoverflow.com/users/440294/nathan-davis"
+            },
+            "is_accepted": true,
+            "score": 35,
+            "last_activity_date": 1283738947,
+            "creation_date": 1283738947,
+            "answer_id": 3648653,
+            "question_id": 3648564,
+            "content_license": "CC BY-SA 2.5",
+            "body": "\u003Cp\u003EIn Python, the body of a class is executed in its own namespace before the class is created (after which, the members of that namespace become the members of the class).  So when the interpreter reaches y = x+1, class B does not exist yet at that point and, therefore, has no parent.\u003C/p\u003E\n\n\u003Cp\u003EFor more details, see \u003Ca href=\"http://docs.python.org/reference/compound_stmts.html#class-definitions\" rel=\"noreferrer\"\u003Ehttp://docs.python.org/reference/compound_stmts.html#class-definitions\u003C/a\u003E\u003C/p\u003E\n"
+        }
+    ],
+    "has_more": false,
+    "quota_max": 300,
+    "quota_remaining": 294
+}

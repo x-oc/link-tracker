@@ -70,30 +70,24 @@ public class GithubProvider extends WebClientInformationProvider {
         String repoName = url.getPath().substring(1).split("/")[1];
 
         List<LinkUpdateEvent> events = info.events().stream()
-            .map(item -> {
-                if (Objects.equals(item.state(), "open")) {
-                    String body = item.body();
-                    if (body == null) {
-                        body = "No description";
+                .map(item -> {
+                    if (Objects.equals(item.state(), "open")) {
+                        String body = item.body();
+                        if (body == null) {
+                            body = "No description";
+                        }
+                        body = body.length() > 200 ? "%s ...".formatted(body.substring(0, 200)) : body;
+                        return new LinkUpdateEvent(
+                                "User %s opened new Issue or Pull Request '%s': %s"
+                                        .formatted(item.user().login(), item.title(), body),
+                                item.creationDate());
                     }
-                    body = body.length() > 200 ? "%s ...".formatted(body.substring(0, 200)) : body;
-                    return new LinkUpdateEvent(
-                        "User %s opened new Issue or Pull Request '%s': %s".formatted(
-                            item.user().login(),
-                            item.title(),
-                            body
-                        ),
-                        item.creationDate());
-                }
-                return null;
-            })
-            .filter(Objects::nonNull)
-            .toList();
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
 
-        return new LinkInformation(
-                url,
-                !info.events().isEmpty() ? repoName : "",
-                events);
+        return new LinkInformation(url, !info.events().isEmpty() ? repoName : "", events);
     }
 
     @Override

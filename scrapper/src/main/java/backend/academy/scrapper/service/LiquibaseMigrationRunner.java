@@ -1,6 +1,11 @@
 package backend.academy.scrapper.service;
 
 import backend.academy.scrapper.config.ScrapperConfig;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.sql.DataSource;
 import liquibase.Scope;
 import liquibase.command.CommandScope;
 import liquibase.command.core.UpdateCommandStep;
@@ -13,12 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import javax.sql.DataSource;
-import java.nio.file.Path;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Profile("!test")
 @Component
@@ -35,8 +34,8 @@ public class LiquibaseMigrationRunner implements CommandLineRunner {
 
     public void migrate(Path changelogPath) throws Exception {
         try (Connection conn = dataSource.getConnection()) {
-            Database database = DatabaseFactory.getInstance()
-                .findCorrectDatabaseImplementation(new JdbcConnection(conn));
+            Database database =
+                    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
 
             ResourceAccessor resourceAccessor = new DirectoryResourceAccessor(changelogPath);
 

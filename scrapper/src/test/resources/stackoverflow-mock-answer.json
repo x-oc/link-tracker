@@ -1,15 +1,35 @@
 {
     "items": [
         {
-            "last_activity_date": 1705410153,
-            "creation_date": 1256799465,
-            "last_edit_date": 1680185464,
-            "question_id": 100,
-            "link": "https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c-c",
-            "title": "What is the &#39;--&gt;&#39; operator in C/C++?",
+            "tags": [
+                "python",
+                "subclass",
+                "class-variables"
+            ],
             "owner": {
-                "name": "Adam"
-            }
+                "account_id": 46273,
+                "reputation": 16603,
+                "user_id": 136598,
+                "user_type": "registered",
+                "accept_rate": 85,
+                "profile_image": "https://www.gravatar.com/avatar/4c3f2c3e70ac1f992466b23d92099244?s=256&d=identicon&r=PG&f=y&so-version=2",
+                "display_name": "minou",
+                "link": "https://stackoverflow.com/users/136598/minou"
+            },
+            "is_answered": true,
+            "view_count": 46621,
+            "accepted_answer_id": 3648653,
+            "answer_count": 3,
+            "score": 43,
+            "last_activity_date": 1747446335,
+            "creation_date": 1283736882,
+            "question_id": 3648564,
+            "content_license": "CC BY-SA 2.5",
+            "link": "https://stackoverflow.com/questions/3648564/python-subclass-access-to-class-variable-of-parent",
+            "title": "python subclass access to class variable of parent"
         }
-    ]
+    ],
+    "has_more": false,
+    "quota_max": 300,
+    "quota_remaining": 297
 }

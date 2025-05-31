@@ -23,17 +23,16 @@ public class StackOverflowProvider extends WebClientInformationProvider {
     private final String authorizationQueryParam;
 
     @Autowired
-    public StackOverflowProvider(
-            @Value("${provider.stackoverflow.url}") String apiUrl, ScrapperConfig config) {
+    public StackOverflowProvider(@Value("${provider.stackoverflow.url}") String apiUrl, ScrapperConfig config) {
         super(apiUrl);
         if (config.stackOverflow() != null
                 && config.stackOverflow().accessToken() != null
                 && !config.stackOverflow().accessToken().isBlank()
                 && !"${SO_ACCESS_TOKEN}".equals(config.stackOverflow().accessToken())) {
-            authorizationQueryParam = "access_token=%s&key=%s".formatted(
-                config.stackOverflow().accessToken(),
-                config.stackOverflow().key()
-            );
+            authorizationQueryParam = "access_token=%s&key=%s"
+                    .formatted(
+                            config.stackOverflow().accessToken(),
+                            config.stackOverflow().key());
         } else {
             authorizationQueryParam = "";
         }
@@ -66,17 +65,12 @@ public class StackOverflowProvider extends WebClientInformationProvider {
         var questionId = matcher.group(1);
 
         var questionUri = "/questions/%s?site=stackoverflow&%s".formatted(questionId, authorizationQueryParam);
-        SoApiQuestionsResponse questionInfo = executeRequest(
-            questionUri,
-            SoApiQuestionsResponse.class,
-            SoApiQuestionsResponse.EMPTY
-        );
-        var answersUri = "/questions/%s/answers?site=stackoverflow&filter=withbody&%s".formatted(questionId, authorizationQueryParam);
-        SoApiAnswersResponse answersInfo = executeRequest(
-            answersUri,
-            SoApiAnswersResponse.class,
-            SoApiAnswersResponse.EMPTY
-        );
+        SoApiQuestionsResponse questionInfo =
+                executeRequest(questionUri, SoApiQuestionsResponse.class, SoApiQuestionsResponse.EMPTY);
+        var answersUri = "/questions/%s/answers?site=stackoverflow&filter=withbody&%s"
+                .formatted(questionId, authorizationQueryParam);
+        SoApiAnswersResponse answersInfo =
+                executeRequest(answersUri, SoApiAnswersResponse.class, SoApiAnswersResponse.EMPTY);
 
         if (SoNoInfoReturned(questionInfo, answersInfo, url)) {
             return null;
@@ -85,21 +79,18 @@ public class StackOverflowProvider extends WebClientInformationProvider {
         String questionTitle = questionInfo.items()[0].title();
 
         List<LinkUpdateEvent> events = Arrays.stream(answersInfo.items())
-            .map(answer ->{
-                String body = answer.body();
-                if (body == null) {
-                    body = "No answer";
-                }
-                body = body.length() > 200 ? "%s ...".formatted(body.substring(0, 200)) : body;
-                return new LinkUpdateEvent(
-                    "There is new answer by user %s on the question '%s': %s".formatted(
-                        answer.owner().name(),
-                        questionTitle,
-                        body
-                    ),
-                    answer.creationDate());
-            })
-            .toList();
+                .map(answer -> {
+                    String body = answer.body();
+                    if (body == null) {
+                        body = "No answer";
+                    }
+                    body = body.length() > 200 ? "%s ...".formatted(body.substring(0, 200)) : body;
+                    return new LinkUpdateEvent(
+                            "There is new answer by user %s on the question '%s': %s"
+                                    .formatted(answer.owner().name(), questionTitle, body),
+                            answer.creationDate());
+                })
+                .toList();
         return new LinkInformation(url, questionInfo.items()[0].title(), events);
     }
 
@@ -112,22 +103,19 @@ public class StackOverflowProvider extends WebClientInformationProvider {
         return new LinkInformation(info.url(), info.title(), filteredEvents);
     }
 
-    private boolean SoNoInfoReturned(SoApiQuestionsResponse questionInfo,
-                                     SoApiAnswersResponse answersInfo,
-                                     URI url) {
-        boolean SoNoInfoReturned =
-            questionInfo == null ||
-            answersInfo == null ||
-            questionInfo.equals(SoApiQuestionsResponse.EMPTY) ||
-            answersInfo.equals(SoApiAnswersResponse.EMPTY) ||
-            questionInfo.items.length == 0 ||
-            answersInfo.items.length == 0;
+    private boolean SoNoInfoReturned(SoApiQuestionsResponse questionInfo, SoApiAnswersResponse answersInfo, URI url) {
+        boolean SoNoInfoReturned = questionInfo == null
+                || answersInfo == null
+                || questionInfo.equals(SoApiQuestionsResponse.EMPTY)
+                || answersInfo.equals(SoApiAnswersResponse.EMPTY)
+                || questionInfo.items.length == 0
+                || answersInfo.items.length == 0;
 
         if (SoNoInfoReturned) {
             log.atWarn()
-                .setMessage("StackOverflow returned no info.")
-                .addKeyValue("url", url)
-                .log();
+                    .setMessage("StackOverflow returned no info.")
+                    .addKeyValue("url", url)
+                    .log();
         }
         return SoNoInfoReturned;
     }

@@ -9,5 +9,4 @@ public interface FilterRepository {
     void add(long linkId, String filter);
 
     void removeByLink(long linkId);
-
 }

@@ -107,10 +107,10 @@ public class LinkControllerTest {
                         .content(objectMapper.writeValueAsString(
                                 new AddLinkRequest(URI.create("http://localhost"), List.of(), List.of())))
                         .header("Tg-Chat-Id", chatId))
-                        .andExpect(status().isOk())
-                        .andExpect(result -> Assertions.assertThat(result.getResponse().getContentAsString())
-                                .isEqualTo("{\"id\":%s,\"url\":\"http://localhost\",\"tags\":null,\"filters\":null}"
-                                        .formatted(chatId)));
+                .andExpect(status().isOk())
+                .andExpect(result -> Assertions.assertThat(result.getResponse().getContentAsString())
+                        .isEqualTo("{\"id\":%s,\"url\":\"http://localhost\",\"tags\":null,\"filters\":null}"
+                                .formatted(chatId)));
 
         Mockito.verify(linkService).addLink(URI.create("http://localhost"), chatId, List.of(), List.of());
     }
@@ -140,8 +140,7 @@ public class LinkControllerTest {
                 .thenThrow(new LinkNotSupportedException("http://localhost"));
         var result = mockMvc.perform(MockMvcRequestBuilders.post("/links")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(
-                                new AddLinkRequest(uri, List.of(), List.of())))
+                        .content(objectMapper.writeValueAsString(new AddLinkRequest(uri, List.of(), List.of())))
                         .header("Tg-Chat-Id", chatId))
                 .andExpect(status().isBadRequest())
                 .andReturn();

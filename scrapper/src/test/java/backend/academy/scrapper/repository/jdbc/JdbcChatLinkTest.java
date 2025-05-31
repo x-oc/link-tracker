@@ -46,7 +46,9 @@ public class JdbcChatLinkTest extends IntegrationEnvironment {
         var id = jdbcLinkRepository.add(link);
         jdbcChatLinkRepository.add(123L, id);
 
-        Assertions.assertThat(jdbcChatLinkRepository.findAllByChatId(123L)).map(Link::url).contains(url);
+        Assertions.assertThat(jdbcChatLinkRepository.findAllByChatId(123L))
+                .map(Link::url)
+                .contains(url);
     }
 
     @Test
@@ -55,7 +57,7 @@ public class JdbcChatLinkTest extends IntegrationEnvironment {
     void findAllByLinkIdShouldFindValueByLinkId() {
         jdbcChatRepository.add(123L);
         var id = jdbcLinkRepository.add(
-            new Link("google.com", List.of(), List.of(), OffsetDateTime.MIN, OffsetDateTime.MAX));
+                new Link("google.com", List.of(), List.of(), OffsetDateTime.MIN, OffsetDateTime.MAX));
         jdbcChatLinkRepository.add(123L, id);
 
         Assertions.assertThat(jdbcChatLinkRepository.findAllByLinkId(id)).contains(123L);
@@ -67,11 +69,12 @@ public class JdbcChatLinkTest extends IntegrationEnvironment {
     void removeShouldDeleteValueFromDatabase() {
         jdbcChatRepository.add(123L);
         var url = "google.com";
-        var id = jdbcLinkRepository.add(
-            new Link(url, List.of(), List.of(), OffsetDateTime.MIN, OffsetDateTime.MAX));
+        var id = jdbcLinkRepository.add(new Link(url, List.of(), List.of(), OffsetDateTime.MIN, OffsetDateTime.MAX));
         jdbcChatLinkRepository.add(123L, id);
         jdbcChatLinkRepository.remove(123L, id);
 
-        Assertions.assertThat(jdbcChatLinkRepository.findAllByChatId(123L)).map(Link::url).doesNotContain(url);
+        Assertions.assertThat(jdbcChatLinkRepository.findAllByChatId(123L))
+                .map(Link::url)
+                .doesNotContain(url);
     }
 }

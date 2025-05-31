@@ -12,5 +12,4 @@ public interface InformationProvider {
     LinkInformation fetchInformation(URI url);
 
     LinkInformation filter(LinkInformation info, OffsetDateTime after);
-
 }

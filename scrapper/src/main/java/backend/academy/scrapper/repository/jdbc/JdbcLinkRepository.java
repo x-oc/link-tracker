@@ -41,9 +41,7 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     public void remove(String url) {
-        client.sql("DELETE FROM link WHERE url = :url")
-                .param("url", url)
-                .update();
+        client.sql("DELETE FROM link WHERE url = :url").param("url", url).update();
     }
 
     @Override

@@ -25,10 +25,10 @@ class TestcontainersConfiguration {
     @ServiceConnection
     PostgreSQLContainer<?> postgresContainer() {
         var postgres = new PostgreSQLContainer<>("postgres:17-alpine")
-            .withExposedPorts(5432)
-            .withDatabaseName("local")
-            .withUsername("postgres")
-            .withPassword("test");
+                .withExposedPorts(5432)
+                .withDatabaseName("local")
+                .withUsername("postgres")
+                .withPassword("test");
         return postgres;
     }
 
@@ -38,5 +38,4 @@ class TestcontainersConfiguration {
     KafkaContainer kafkaContainer() {
         return new KafkaContainer("apache/kafka-native:3.8.1").withExposedPorts(9092);
     }
-
 }
