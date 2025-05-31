@@ -6,7 +6,10 @@
             "last_edit_date": 1680185464,
             "question_id": 100,
             "link": "https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c-c",
-            "title": "What is the &#39;--&gt;&#39; operator in C/C++?"
+            "title": "What is the &#39;--&gt;&#39; operator in C/C++?",
+            "owner": {
+                "name": "Adam"
+            }
         }
     ]
 }

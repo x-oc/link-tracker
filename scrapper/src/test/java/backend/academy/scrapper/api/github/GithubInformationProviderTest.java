@@ -14,16 +14,19 @@ import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class GithubInformationProviderTest {
 
     private static GithubProvider provider;
-    private static final ScrapperConfig EMPTY_CONFIG = new ScrapperConfig(null, null, null, null);
+    private static final ScrapperConfig EMPTY_CONFIG =
+        new ScrapperConfig(null, null, null, null, null);
 
     @BeforeAll
     public static void setUp() {
         WireMockServer server = new WireMockServer(wireMockConfig().dynamicPort());
-        server.stubFor(get(urlPathMatching("/repos/x-oc/slae-solutions/events"))
+        server.stubFor(get(urlPathMatching("/repos/x-oc/test-repo/issues"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -38,10 +41,10 @@ public class GithubInformationProviderTest {
     @SneakyThrows
     @Test
     public void getInformationShouldReturnCorrectInformation() {
-        var info = provider.fetchInformation(new URI("https://github.com/x-oc/slae-solutions"));
+        var info = provider.fetchInformation(new URI("https://github.com/x-oc/test-repo"));
         Assertions.assertThat(info)
                 .extracting(LinkInformation::url, LinkInformation::title)
-                .contains(new URI("https://github.com/x-oc/slae-solutions"), "x-oc/slae-solutions");
+                .contains(new URI("https://github.com/x-oc/test-repo"), "test-repo");
     }
 
     @SneakyThrows

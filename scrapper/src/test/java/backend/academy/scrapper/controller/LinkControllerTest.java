@@ -13,6 +13,7 @@ import backend.academy.scrapper.service.LinkService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,23 +25,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+@ActiveProfiles("test")
 @WebMvcTest(LinkController.class)
 @Import(LinkControllerTest.TestConfig.class)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LinkControllerTest {
 
     private static Long chatId;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private LinkService linkService;
+    private final MockMvc mockMvc;
+    private final ObjectMapper objectMapper;
+    private final LinkService linkService;
 
     @BeforeAll
     public static void setUpChatId() {
@@ -136,12 +135,13 @@ public class LinkControllerTest {
     @Test
     @DisplayName("Тестирование LinkController#addLink с неподдерживаемой ссылкой")
     public void addLinkShouldReturnErrorWhenLinkIsNotSupported() throws Exception {
-        Mockito.when(linkService.addLink(URI.create("http://localhost"), chatId, List.of(), List.of()))
+        var uri = URI.create("http://localhost");
+        Mockito.when(linkService.addLink(uri, chatId, List.of(), List.of()))
                 .thenThrow(new LinkNotSupportedException("http://localhost"));
         var result = mockMvc.perform(MockMvcRequestBuilders.post("/links")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(
-                                new AddLinkRequest(URI.create("http://localhost"), null, null)))
+                                new AddLinkRequest(uri, List.of(), List.of())))
                         .header("Tg-Chat-Id", chatId))
                 .andExpect(status().isBadRequest())
                 .andReturn();

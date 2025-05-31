@@ -15,12 +15,12 @@ public class HelpCommandTest {
         HelpCommand command = new HelpCommand(List.of(createMockCommand()));
         CommandArguments arguments = new CommandArguments("", 1L);
         Assertions.assertThat(command.handle(arguments))
-                .isEqualTo("Sure! Here's the list of available commands: \n /mock mock description\n ");
+                .isEqualTo("Sure! Here's the list of available commands: \n /mock - mock description\n ");
     }
 
     private Command createMockCommand() {
         Command mockCommand = Mockito.mock(Command.class);
-        Mockito.when(mockCommand.command()).thenReturn("/mock");
+        Mockito.when(mockCommand.commandWithArguments()).thenReturn("/mock");
         Mockito.when(mockCommand.description()).thenReturn("mock description");
         return mockCommand;
     }

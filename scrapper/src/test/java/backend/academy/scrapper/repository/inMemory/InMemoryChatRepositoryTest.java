@@ -1,12 +1,14 @@
-package backend.academy.scrapper.repository;
+package backend.academy.scrapper.repository.inMemory;
 
-import backend.academy.scrapper.repository.inMemory.InMemoryChatRepository;
+import backend.academy.scrapper.repository.TgChatRepository;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class InMemoryChatRepositoryTest {
 
     private TgChatRepository chatRepository;

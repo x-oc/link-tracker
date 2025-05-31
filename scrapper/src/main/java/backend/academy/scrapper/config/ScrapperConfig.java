@@ -12,7 +12,8 @@ public record ScrapperConfig(
         @NotEmpty String githubToken,
         StackOverflowCredentials stackOverflow,
         Scheduler scheduler,
-        String databaseAccessType) {
+        String databaseAccessType,
+        String migrationsPath) {
 
     public record StackOverflowCredentials(@NotEmpty String key, @NotEmpty String accessToken) {}
 

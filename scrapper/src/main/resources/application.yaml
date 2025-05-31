@@ -9,6 +9,7 @@ app:
     key: ${SO_TOKEN_KEY}
     access-token: ${SO_ACCESS_TOKEN}
   database-access-type: jpa
+  migrations-path: migrations
 
 provider:
   github:

@@ -14,11 +14,14 @@ import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 public class StackOverflowProviderTest {
 
     private static StackOverflowProvider provider;
-    private static final ScrapperConfig EMPTY_CONFIG = new ScrapperConfig(null, null, null, null);
+    private static final ScrapperConfig EMPTY_CONFIG =
+        new ScrapperConfig(null, null, null, null, null);
 
     @BeforeAll
     public static void setUp() {
