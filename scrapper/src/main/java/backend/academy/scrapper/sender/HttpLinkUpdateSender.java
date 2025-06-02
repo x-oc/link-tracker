@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.use-queue", havingValue = "false")
+@ConditionalOnProperty(name = "app.message-transport", havingValue = "HTTP")
 @Service
 public class HttpLinkUpdateSender implements LinkUpdateSender {
 

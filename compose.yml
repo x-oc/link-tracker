@@ -19,17 +19,60 @@ services:
     command:
       - --changelog-file=migrations/master.xml
       - --driver=org.postgresql.Driver
-      - --url=jdbc:postgresql://postgresql:5433/scrapper
+      - --url=jdbc:postgresql://postgresql:5432/scrapper
       - --username=postgres
       - --password=postgres
       - update
     volumes:
-      - ./scrapper/migrations:/liquibase/changelog
+      - ./migrations:/liquibase/changelog
     networks:
       - backend
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    volumes:
+      - zookeeper:/var/lib/zookeeper/data
+
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
+    container_name: kafka-1
+    ports:
+      - "19092:19092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:9092,DOCKER://localhost:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MIN_IN_SYNC_REPLICAS: 1
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8082:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    volumes:
+      - ./kui/config.yml:/etc/kafkaui/config.yaml
+      - ./kui/config.yml:/etc/kafkaui/dynamic_config.yaml
+
 volumes:
   postgresql: { }
+  kafka: { }
+  zookeeper: { }
 
 networks:
   backend: { }

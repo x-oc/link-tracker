@@ -55,6 +55,8 @@ class LinkUpdateSchedulerTest {
                 null,
                 new ScrapperConfig.Scheduler(true, Duration.ofSeconds(100), Duration.ofMillis(100), 10),
                 null,
+                null,
+                null,
                 null);
         linkUpdateScheduler = new LinkUpdateScheduler(linkService, config, providers, sender);
     }

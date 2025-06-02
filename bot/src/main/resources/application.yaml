@@ -1,19 +1,21 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN} # env variable
+  kafka:
+    updates-topic-name: updates
 
 spring:
   application:
     name: Bot
-  liquibase:
-    enabled: false
-  datasource:
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost:5433}/scrapper
-    username: postgres
-    password: ${DB_PASSWORD:postgres}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    open-in-view: false
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:localhost:19092}
+    consumer:
+      group-id: bot
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: backend.academy.bot.dto.request.LinkUpdate
+      auto-offset-reset: earliest
 
 server:
   port: 8090

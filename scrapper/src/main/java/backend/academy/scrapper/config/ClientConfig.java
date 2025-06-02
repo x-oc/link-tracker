@@ -1,8 +1,6 @@
 package backend.academy.scrapper.config;
 
 import backend.academy.scrapper.client.BotClient;
-import backend.academy.scrapper.sender.HttpLinkUpdateSender;
-import backend.academy.scrapper.sender.LinkUpdateSender;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,10 +32,5 @@ public class ClientConfig {
                         WebClientAdapter.create(webClient))
                 .build();
         return httpServiceProxyFactory.createClient(BotClient.class);
-    }
-
-    @Bean
-    public LinkUpdateSender linkUpdateSender() {
-        return new HttpLinkUpdateSender(botClient());
     }
 }

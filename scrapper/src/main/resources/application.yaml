@@ -10,6 +10,9 @@ app:
     access-token: ${SO_ACCESS_TOKEN}
   database-access-type: jpa
   migrations-path: migrations
+  message-transport: Kafka
+  kafka:
+    updates-topic-name: updates
 
 provider:
   github:
@@ -34,6 +37,14 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:localhost:19092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+        schema.registry.url: http://localhost:8083
 
 server:
   port: 8081

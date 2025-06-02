@@ -13,10 +13,14 @@ public record ScrapperConfig(
         StackOverflowCredentials stackOverflow,
         Scheduler scheduler,
         String databaseAccessType,
-        String migrationsPath) {
+        KafkaProperties kafka,
+        String migrationsPath,
+        String messageTransport) {
 
     public record StackOverflowCredentials(@NotEmpty String key, @NotEmpty String accessToken) {}
 
     public record Scheduler(
             boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay, int maxLinksPerCheck) {}
+
+    public record KafkaProperties(String updatesTopicName) {}
 }
