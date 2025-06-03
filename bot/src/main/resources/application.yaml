@@ -2,10 +2,18 @@ app:
   telegram-token: ${TELEGRAM_TOKEN} # env variable
   kafka:
     updates-topic-name: updates
+  redis:
+    cache-ttl: 600
+    list-command-cache-prefix: "tracked_links:"
 
 spring:
   application:
     name: Bot
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+      timeout: 5000
   kafka:
     bootstrap-servers: ${KAFKA_URL:localhost:19092}
     consumer:

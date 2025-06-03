@@ -17,7 +17,7 @@ public class UntrackCommandTest {
     public void handleShouldReturnErrorWhenInvalidLink() {
         LinksStorage linksStorage = new RemoteLinksStorage(Mockito.mock(ScrapperClient.class));
         LinksStorage spiedLinksStorage = Mockito.spy(linksStorage);
-        UntrackCommand command = new UntrackCommand(spiedLinksStorage);
+        UntrackCommand command = new UntrackCommand(spiedLinksStorage, null, null);
 
         Assertions.assertThat(command.handle(new CommandArguments("not even a link", 1L)))
                 .isEqualTo(BotResponses.REMOVE_USER_LINK_FAIL.message);
@@ -31,7 +31,7 @@ public class UntrackCommandTest {
         LinksStorage mockedLinksStorage = Mockito.mock(RemoteLinksStorage.class);
         Mockito.when(mockedLinksStorage.removeUserLink(1L, url))
                 .thenReturn(BotResponses.REMOVE_USER_LINK_SUCCESS.message);
-        UntrackCommand command = new UntrackCommand(mockedLinksStorage);
+        UntrackCommand command = new UntrackCommand(mockedLinksStorage, null, null);
 
         Assertions.assertThat(command.handle(new CommandArguments(url, 1L)))
                 .isEqualTo(

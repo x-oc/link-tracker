@@ -1,5 +1,6 @@
 package backend.academy.bot.command;
 
+import backend.academy.bot.config.ApplicationConfig;
 import backend.academy.bot.model.CommandArguments;
 import backend.academy.bot.model.Link;
 import backend.academy.bot.response.BotResponses;
@@ -11,14 +12,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TrackCommand implements Command {
 
     private final LinksStorage linksStorage;
     private final UserStateStorage stateStorage;
+    private final ApplicationConfig config;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public String command() {
@@ -37,6 +43,7 @@ public class TrackCommand implements Command {
 
     @Override
     public String handle(CommandArguments arguments) {
+        invalidateCache(arguments.chatId());
         UserState userState = stateStorage.getUserState(arguments.chatId());
         return switch (userState) {
             case AWAITING_FILTERS -> handleAddFilters(arguments);
@@ -117,5 +124,19 @@ public class TrackCommand implements Command {
         }
         return String.format(
                 "You started tracking the link %s! You will get a notification on its' update.", lastLink.url());
+    }
+
+    private void invalidateCache(long chatId) {
+        String cacheKey = null;
+        try {
+            cacheKey = config.redis().listCommandCachePrefix() + chatId;
+            redisTemplate.delete(cacheKey);
+        } catch (Exception e) {
+            log.atWarn()
+                    .setMessage("Failed to invalidate cache in Track command")
+                    .addKeyValue("key", cacheKey)
+                    .setCause(e)
+                    .log();
+        }
     }
 }

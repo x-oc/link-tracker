@@ -45,7 +45,7 @@ public class TrackCommandTest {
         Mockito.when(mockLinksStorage.addUserLink(chatId, url, null, null))
                 .thenReturn(BotResponses.ADD_USER_LINK_SUCCESS.message);
         UserStateStorage spiedStateStorage = Mockito.spy(stateStorage);
-        TrackCommand command = new TrackCommand(mockLinksStorage, spiedStateStorage);
+        TrackCommand command = new TrackCommand(mockLinksStorage, spiedStateStorage, null, null);
 
         Assertions.assertThat(command.handle(new CommandArguments(url, chatId)))
                 .isEqualTo("Enter tags for the link, please (or 'none' to skip): ");
@@ -60,7 +60,7 @@ public class TrackCommandTest {
         String url = "https://example.com";
         Mockito.when(mockLinksStorage.addUserLink(chatId, url, null, null))
                 .thenReturn("Link %s is not supported".formatted(url));
-        TrackCommand command = new TrackCommand(mockLinksStorage, stateStorage);
+        TrackCommand command = new TrackCommand(mockLinksStorage, stateStorage, null, null);
 
         Assertions.assertThat(command.handle(new CommandArguments(url, chatId)))
                 .isEqualTo("Link %s is not supported".formatted(url));
@@ -70,7 +70,7 @@ public class TrackCommandTest {
     @DisplayName("Тестирование метода TrackCommand#handle с невалидными данными")
     @Test
     public void handleShouldReturnErrorWhenInvalidUrl() {
-        TrackCommand command = new TrackCommand(mockLinksStorage, stateStorage);
+        TrackCommand command = new TrackCommand(mockLinksStorage, stateStorage, null, null);
 
         Assertions.assertThat(command.handle(new CommandArguments("not even a link", chatId)))
                 .isEqualTo("Invalid link");
@@ -91,7 +91,7 @@ public class TrackCommandTest {
         Mockito.when(mockUserStateStorage.getUserState(chatId)).thenReturn(UserState.AWAITING_TAGS);
         Mockito.when(mockUserStateStorage.getLastLink(chatId)).thenReturn(new Link(url));
 
-        TrackCommand command = new TrackCommand(mockLinksStorage, mockUserStateStorage);
+        TrackCommand command = new TrackCommand(mockLinksStorage, mockUserStateStorage, null, null);
 
         Assertions.assertThat(command.handle(new CommandArguments("tag1 tag2", chatId)))
                 .isEqualTo("Now enter filters, please (or 'none'): ");
@@ -118,7 +118,7 @@ public class TrackCommandTest {
         link.tags(tags);
         Mockito.when(mockUserStateStorage.getLastLink(chatId)).thenReturn(link);
 
-        TrackCommand command = new TrackCommand(mockLinksStorage, mockUserStateStorage);
+        TrackCommand command = new TrackCommand(mockLinksStorage, mockUserStateStorage, null, null);
 
         Assertions.assertThat(command.handle(new CommandArguments("filter1 filter2", chatId)))
                 .isEqualTo(("You started tracking the link %s!" + " You will get a notification on its' update.")
