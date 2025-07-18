@@ -47,7 +47,11 @@ public class ListCommand implements Command {
 
         StringBuilder sb = new StringBuilder("Here's list of links that you are tracking now: \n ");
         for (Link link : links) {
-            sb.append(link.url()).append("\n ");
+            sb.append(link.url()).append(" ");
+            if (link.tags() != null && !link.tags().isEmpty()) {
+                sb.append(link.tags());
+            }
+            sb.append("\n ");
         }
         String response = sb.toString().stripTrailing();
 

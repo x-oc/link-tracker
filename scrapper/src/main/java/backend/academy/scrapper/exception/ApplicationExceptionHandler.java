@@ -108,7 +108,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(ScrapperException.class)
     public ResponseEntity<ApiErrorResponse> handleScrapperException(ScrapperException ex) {
-        log.atError()
+        log.atWarn()
                 .setMessage("Scrapper exception.")
                 .addKeyValue("message", ex.getMessage())
                 .addKeyValue("status", ex.status().value())

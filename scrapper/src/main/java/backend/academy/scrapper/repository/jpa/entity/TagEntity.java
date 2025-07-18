@@ -7,12 +7,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -25,15 +28,18 @@ public class TagEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "link_id")
-    private LinkEntity link;
+    @JoinColumn(name = "chat_id", nullable = false)
+    private ChatEntity chat;
 
-    @Column(name = "tag")
-    private String tag;
+    @ManyToMany(mappedBy = "tags")
+    private Set<LinkEntity> links = new HashSet<>();
 
-    public TagEntity(LinkEntity link, String tag) {
-        this.link = link;
-        this.tag = tag;
+    public TagEntity(ChatEntity chat, String name) {
+        this.chat = chat;
+        this.name = name;
     }
 }

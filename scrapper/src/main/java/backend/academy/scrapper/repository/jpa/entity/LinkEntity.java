@@ -8,6 +8,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -40,7 +42,12 @@ public class LinkEntity {
     @Column(name = "last_updated")
     private OffsetDateTime lastUpdated;
 
-    @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+        name = "link_tag",
+        joinColumns = @JoinColumn(name = "link_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
     private Set<TagEntity> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -59,7 +66,7 @@ public class LinkEntity {
         return new Link(
                 id,
                 url,
-                tags.stream().map(TagEntity::tag).collect(Collectors.toList()),
+                tags.stream().map(TagEntity::name).collect(Collectors.toList()),
                 filters.stream().map(FilterEntity::filter).collect(Collectors.toList()),
                 lastChecked,
                 lastUpdated);

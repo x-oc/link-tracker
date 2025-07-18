@@ -8,7 +8,10 @@ import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JpaLinkRepository extends JpaRepository<LinkEntity, Long> {
+
     List<LinkEntity> findAllByLastCheckedBefore(OffsetDateTime from, Limit limit);
+
+    List<LinkEntity> findByTagsName(String tag);
 
     Optional<LinkEntity> findByUrl(String url);
 }

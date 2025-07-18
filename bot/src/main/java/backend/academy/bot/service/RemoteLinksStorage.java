@@ -73,7 +73,7 @@ public class RemoteLinksStorage implements LinksStorage {
                 return links;
             }
             for (var link : linkDTOs) {
-                links.add(new Link(link.url().toString()));
+                links.add(new Link(link.url().toString(), link.tags(), link.filters()));
             }
             return links;
         } catch (Exception e) {

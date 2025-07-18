@@ -42,8 +42,12 @@ public class JpaLinkService implements LinkService {
                 .map(chat -> new ListLinksResponse(
                         chat.links().stream()
                                 .map(LinkEntity::toDto)
-                                .map(link -> new LinkResponse(
-                                        link.id(), URI.create(link.url()), link.tags(), link.filters()))
+                                .map(link -> {
+                                    List<String> tags = tagRepository.findByLinks_IdAndChat_Id(link.id(), tgChatId)
+                                        .stream().map(TagEntity::name).toList();
+                                    return new LinkResponse(
+                                        link.id(), URI.create(link.url()), tags, link.filters());
+                                })
                                 .toList(),
                         chat.links().size()))
                 .orElseThrow(() -> new ChatNotFoundException(tgChatId));
@@ -79,7 +83,7 @@ public class JpaLinkService implements LinkService {
         chat.addLink(linkEntity);
         if (tags != null) {
             for (var tag : tags) {
-                tagRepository.save(new TagEntity(linkEntity, tag));
+                tagRepository.add(linkEntity.id(), tag, tgChatId);
             }
         }
 
@@ -97,7 +101,7 @@ public class JpaLinkService implements LinkService {
         var chat = chatRepository.findById(tgChatId).orElseThrow(() -> new ChatNotFoundException(tgChatId));
         var linkEntity = linkRepository.findByUrl(url).orElseThrow();
         chat.removeLink(linkEntity);
-        tagRepository.deleteByLink(linkEntity);
+        tagRepository.deleteByLinks_Id(linkEntity.id());
         filterRepository.deleteByLink(linkEntity);
         if (linkEntity.chats().isEmpty()) {
             linkRepository.delete(linkEntity);

@@ -36,7 +36,11 @@ public class JdbcLinkService implements LinkService {
     public ListLinksResponse listLinks(Long tgChatId) {
         var links = tgChatLinkRepository.findAllByChatId(tgChatId);
         var linkResponses = links.stream()
-                .map(link -> new LinkResponse(link.id(), URI.create(link.url()), link.tags(), link.filters()))
+                .map(link -> {
+                    List<String> tags = tagRepository.findByLinkAndChat(link.id(), tgChatId);
+                    return new LinkResponse(
+                        link.id(), URI.create(link.url()), tags, link.filters());
+                })
                 .toList();
         return new ListLinksResponse(linkResponses, linkResponses.size());
     }
@@ -68,7 +72,7 @@ public class JdbcLinkService implements LinkService {
         var id = linkRepository.add(new Link(link.toString(), tags, filters, lastModified, OffsetDateTime.now()));
         tgChatLinkRepository.add(tgChatId, id);
         for (var tag : tags) {
-            tagRepository.add(id, tag);
+            tagRepository.add(id, tag, tgChatId);
         }
         for (var filter : filters) {
             filterRepository.add(id, filter);

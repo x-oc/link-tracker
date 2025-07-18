@@ -1,6 +1,7 @@
 package backend.academy.bot.model;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import org.hibernate.validator.constraints.URL;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class Link {
 
     @URL

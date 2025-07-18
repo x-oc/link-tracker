@@ -37,8 +37,8 @@ springdoc:
     path: /swagger-ui
 
 logging:
-  structured:
-    format:
-      console: ecs
+#  structured:
+#    format:
+#      console: ecs
   file:
     name: logs/bot-log.json
