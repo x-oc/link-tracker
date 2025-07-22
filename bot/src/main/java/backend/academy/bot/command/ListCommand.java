@@ -5,6 +5,7 @@ import backend.academy.bot.model.CommandArguments;
 import backend.academy.bot.model.Link;
 import backend.academy.bot.service.LinksStorage;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -83,7 +84,7 @@ public class ListCommand implements Command {
 
     private void saveToCache(String cacheKey, Long chatId, String answer) {
         try {
-            redisTemplate.opsForValue().set(cacheKey, answer, config.redis().cacheTtl());
+            redisTemplate.opsForValue().set(cacheKey, answer, config.redis().cacheTtl(), TimeUnit.SECONDS);
         } catch (Exception e) {
             log.atWarn()
                     .setMessage("Failed to set cache for List command to Redis")

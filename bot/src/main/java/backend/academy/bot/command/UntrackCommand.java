@@ -2,8 +2,10 @@ package backend.academy.bot.command;
 
 import backend.academy.bot.config.ApplicationConfig;
 import backend.academy.bot.model.CommandArguments;
+import backend.academy.bot.model.Link;
 import backend.academy.bot.response.BotResponses;
 import backend.academy.bot.service.LinksStorage;
+import backend.academy.bot.validator.LinkValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,6 +37,9 @@ public class UntrackCommand implements Command {
 
     @Override
     public String handle(CommandArguments arguments) {
+        if (!LinkValidator.isValid(new Link(arguments.userArguments()))) {
+            return "Invalid link";
+        }
         String response = linksStorage.removeUserLink(arguments.chatId(), arguments.userArguments());
         if (!response.equals(BotResponses.REMOVE_USER_LINK_SUCCESS.message)) {
             return response;

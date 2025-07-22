@@ -30,6 +30,7 @@ server:
 
 scrapper:
   url: ${SCRAPPER_URL:http://localhost:8081}
+  response-timeout: 400ms
 
 springdoc:
   swagger-ui:
@@ -42,3 +43,15 @@ logging:
 #      console: ecs
   file:
     name: logs/bot-log.json
+
+resilience4j:
+  retry:
+    instances:
+      scrapperRetry:
+        maxAttempts: 3
+        waitDuration: 400ms
+        retryExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException

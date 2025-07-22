@@ -8,6 +8,7 @@ import backend.academy.bot.model.Link;
 import backend.academy.bot.response.BotResponses;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,9 +68,9 @@ public class RemoteLinksStorage implements LinksStorage {
             var linkDTOs = response.links();
             if (linkDTOs == null) {
                 log.atWarn()
-                        .setMessage("Error response while trying get user link.")
-                        .addKeyValue("chatId", chatId)
-                        .log();
+                    .setMessage("Error response while trying get user link.")
+                    .addKeyValue("chatId", chatId)
+                    .log();
                 return links;
             }
             for (var link : linkDTOs) {
@@ -77,6 +78,7 @@ public class RemoteLinksStorage implements LinksStorage {
             }
             return links;
         } catch (Exception e) {
+            handleScrapperClientException(e, chatId, "getLinks");
             return links;
         }
     }
@@ -96,11 +98,11 @@ public class RemoteLinksStorage implements LinksStorage {
                     .setMessage("Error response from scrapper.")
                     .addKeyValue("action", action)
                     .addKeyValue(
-                            "statusCode", apiErrorException.getErrorResponse().code())
-                    .addKeyValue("message", apiErrorException.getErrorResponse().exceptionMessage())
+                            "statusCode", apiErrorException.errorResponse().code())
+                    .addKeyValue("message", apiErrorException.errorResponse().exceptionMessage())
                     .addKeyValue("chatId", chatId)
                     .log();
-            return apiErrorException.getErrorResponse().exceptionMessage();
+            return apiErrorException.errorResponse().exceptionMessage();
         } else {
             log.atWarn()
                     .setMessage("Unknown error while getting response from scrapper.")

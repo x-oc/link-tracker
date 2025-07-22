@@ -40,7 +40,7 @@ public abstract class WebClientInformationProvider implements InformationProvide
                     .block();
         } catch (Exception e) {
             log.atError()
-                    .setMessage("Error while trying to execute StackOverflow API Request.")
+                    .setMessage("Error while trying to execute API Request.")
                     .addKeyValue("message", e.getMessage())
                     .addKeyValue("uri", uri)
                     .log();

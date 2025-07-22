@@ -4,6 +4,7 @@ import backend.academy.scrapper.api.InformationProvider;
 import backend.academy.scrapper.dto.response.LinkResponse;
 import backend.academy.scrapper.dto.response.ListLinksResponse;
 import backend.academy.scrapper.exception.ChatNotFoundException;
+import backend.academy.scrapper.exception.LinkNotFoundException;
 import backend.academy.scrapper.exception.LinkNotSupportedException;
 import backend.academy.scrapper.model.Link;
 import backend.academy.scrapper.repository.jpa.JpaChatRepository;
@@ -99,7 +100,7 @@ public class JpaLinkService implements LinkService {
     @Transactional
     public LinkResponse removeLink(String url, Long tgChatId) {
         var chat = chatRepository.findById(tgChatId).orElseThrow(() -> new ChatNotFoundException(tgChatId));
-        var linkEntity = linkRepository.findByUrl(url).orElseThrow();
+        var linkEntity = linkRepository.findByUrl(url).orElseThrow(() -> new LinkNotFoundException(url));
         chat.removeLink(linkEntity);
         tagRepository.deleteByLinks_Id(linkEntity.id());
         filterRepository.deleteByLink(linkEntity);
