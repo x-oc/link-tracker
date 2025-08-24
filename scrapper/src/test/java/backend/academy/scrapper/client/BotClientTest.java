@@ -1,10 +1,5 @@
 package backend.academy.scrapper.client;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-
 import backend.academy.scrapper.dto.OptionalAnswer;
 import backend.academy.scrapper.dto.request.LinkUpdate;
 import backend.academy.scrapper.dto.response.ApiErrorResponse;
@@ -15,24 +10,32 @@ import java.util.List;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.support.WebClientAdapter;
-import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.HttpClientErrorException;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
-@WireMockTest(httpPort = 9090)
+@WireMockTest(httpPort = 8090)
+@SpringBootTest()
 public class BotClientTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private BotClient botClient;
 
     @SneakyThrows
     @Test
     public void updatesShouldReturnCorrectValue() {
         stubFor(post(urlPathMatching("/updates")).willReturn(aResponse().withStatus(200)));
 
-        BotClient botClient = botClient();
         OptionalAnswer<Void> response = botClient.handleUpdates(
                 new LinkUpdate(100L, URI.create("https://article.com"), "description", List.of()));
         Assertions.assertThat(response).isNull();
@@ -48,22 +51,9 @@ public class BotClientTest {
                                 new ApiErrorResponse("Not found", "404", "Not found", "Not found", List.of())))
                         .withHeader("Content-Type", "application/json")));
 
-        BotClient scrapperClient = botClient();
-        ApiErrorResponse response = scrapperClient
-                .handleUpdates(new LinkUpdate(100L, URI.create("https://article.com"), "description", List.of()))
-                .apiErrorResponse();
-        Assertions.assertThat(response).extracting(ApiErrorResponse::code).isEqualTo("404");
-    }
-
-    private static BotClient botClient() {
-        WebClient webClient = WebClient.builder()
-                .defaultStatusHandler(httpStatusCode -> true, clientResponse -> Mono.empty())
-                .baseUrl("http://localhost:9090")
-                .build();
-
-        HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory.builderFor(
-                        WebClientAdapter.create(webClient))
-                .build();
-        return httpServiceProxyFactory.createClient(BotClient.class);
+        HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+            botClient.handleUpdates(new LinkUpdate(100L, URI.create("https://article.com"), "description", List.of()))
+        );
+        assertEquals(404, exception.getStatusCode().value());
     }
 }

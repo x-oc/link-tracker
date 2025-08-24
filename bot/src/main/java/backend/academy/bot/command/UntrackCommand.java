@@ -38,7 +38,7 @@ public class UntrackCommand implements Command {
     @Override
     public String handle(CommandArguments arguments) {
         if (!LinkValidator.isValid(new Link(arguments.userArguments()))) {
-            return "Invalid link";
+            return BotResponses.REMOVE_USER_LINK_FAIL.message;
         }
         String response = linksStorage.removeUserLink(arguments.chatId(), arguments.userArguments());
         if (!response.equals(BotResponses.REMOVE_USER_LINK_SUCCESS.message)) {

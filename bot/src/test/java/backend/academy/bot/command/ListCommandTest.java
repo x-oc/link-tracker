@@ -41,7 +41,7 @@ public class ListCommandTest extends RedisIntegrationEnvironment {
         Mockito.when(mockedLinksStorage.getLinks(1L)).thenReturn(links);
         ListCommand command = new ListCommand(mockedLinksStorage, null, null);
 
-        String correctResponse = "Here's list of links that you are tracking now: \n link1\n link2";
+        String correctResponse = "Here's list of links that you are tracking now: \n link1 \n link2";
         Assertions.assertThat(command.handle(new CommandArguments("", 1L))).isEqualTo(correctResponse);
         Mockito.verify(mockedLinksStorage, Mockito.times(1)).getLinks(1L);
     }
@@ -63,7 +63,7 @@ public class ListCommandTest extends RedisIntegrationEnvironment {
 
         String firstResponse = command.handle(new CommandArguments("", 1L)).replaceAll("\0+", "");
         String secondResponse = command.handle(new CommandArguments("", 1L)).replaceAll("\0+", "");
-        String correctResponse = "Here's list of links that you are tracking now: \n link1\n link2";
+        String correctResponse = "Here's list of links that you are tracking now: \n link1 \n link2";
 
         Mockito.verify(spyRedisTemplate, Mockito.times(3)).opsForValue();
         Mockito.verify(mockedLinksStorage, Mockito.times(1)).getLinks(1L);

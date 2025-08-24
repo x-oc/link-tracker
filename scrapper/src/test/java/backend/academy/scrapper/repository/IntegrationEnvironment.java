@@ -7,17 +7,17 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.DirectoryResourceAccessor;
 import lombok.SneakyThrows;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
 
 @Testcontainers
-@DirtiesContext
 public abstract class IntegrationEnvironment {
     public static PostgreSQLContainer<?> POSTGRES;
+    public static KafkaContainer KAFKA;
 
     static {
         POSTGRES = new PostgreSQLContainer<>("postgres:15")
@@ -26,6 +26,8 @@ public abstract class IntegrationEnvironment {
                 .withPassword("postgres");
         POSTGRES.start();
         runMigrations(POSTGRES);
+
+        KAFKA = new KafkaContainer("apache/kafka-native:3.8.1").withExposedPorts(19092);
     }
 
     @SneakyThrows

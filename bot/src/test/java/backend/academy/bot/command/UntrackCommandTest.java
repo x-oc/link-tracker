@@ -21,7 +21,7 @@ public class UntrackCommandTest {
 
         Assertions.assertThat(command.handle(new CommandArguments("not even a link", 1L)))
                 .isEqualTo(BotResponses.REMOVE_USER_LINK_FAIL.message);
-        Mockito.verify(spiedLinksStorage, Mockito.times(1)).removeUserLink(1L, "not even a link");
+        Mockito.verifyNoInteractions(spiedLinksStorage);
     }
 
     @DisplayName("Тестирование метода UntrackCommand#handle с корректной ссылкой")
