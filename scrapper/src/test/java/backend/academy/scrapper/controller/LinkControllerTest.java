@@ -2,6 +2,7 @@ package backend.academy.scrapper.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import backend.academy.scrapper.config.ScrapperConfig;
 import backend.academy.scrapper.dto.request.AddLinkRequest;
 import backend.academy.scrapper.dto.request.RemoveLinkRequest;
 import backend.academy.scrapper.dto.response.ApiErrorResponse;
@@ -9,6 +10,7 @@ import backend.academy.scrapper.dto.response.LinkResponse;
 import backend.academy.scrapper.dto.response.ListLinksResponse;
 import backend.academy.scrapper.exception.ChatNotFoundException;
 import backend.academy.scrapper.exception.LinkNotSupportedException;
+import backend.academy.scrapper.service.IpRateLimiterService;
 import backend.academy.scrapper.service.LinkService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
@@ -26,11 +28,19 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ActiveProfiles("test")
 @WebMvcTest(LinkController.class)
+@TestPropertySource(
+        properties = {
+            "app.rate-limiter.timeout-duration=0s",
+            "app.rate-limiter.limit-for-period=100",
+            "app.rate-limiter.limit-refresh-period=5s"
+        })
 @Import(LinkControllerTest.TestConfig.class)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LinkControllerTest {
@@ -39,6 +49,9 @@ public class LinkControllerTest {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
+    private final IpRateLimiterService ipRateLimiterService;
+
+    @MockitoBean
     private final LinkService linkService;
 
     @BeforeAll
@@ -168,6 +181,11 @@ public class LinkControllerTest {
         @Bean
         public LinkService linkService() {
             return Mockito.mock(LinkService.class);
+        }
+
+        @Bean
+        public IpRateLimiterService ipRateLimiterService(ScrapperConfig config) {
+            return new IpRateLimiterService(config);
         }
     }
 }

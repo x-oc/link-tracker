@@ -13,7 +13,10 @@ public interface JpaTagRepository extends JpaRepository<TagEntity, Long> {
 
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = """
+    @Query(
+            nativeQuery = true,
+            value =
+                    """
         INSERT INTO tag (name, chat_id)
         SELECT :tag, :chatId
         WHERE NOT EXISTS (

@@ -1,4 +1,11 @@
-package backend.academy.scrapper.client;
+package backend.academy.scrapper.resilience;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import backend.academy.scrapper.dto.request.LinkUpdate;
 import backend.academy.scrapper.repository.IntegrationEnvironment;
@@ -12,19 +19,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpServerErrorException;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 @ActiveProfiles("test")
 @WireMockTest(httpPort = 8090)
 @SpringBootTest(properties = "app.message-transport=HTTP")
 @DirtiesContext
-public class HttpBotClientCircuitBreakerTest extends IntegrationEnvironment {
+public class CircuitBreakerTest extends IntegrationEnvironment {
 
     @Autowired
     private HttpLinkUpdateSender updateSender;
@@ -35,8 +35,7 @@ public class HttpBotClientCircuitBreakerTest extends IntegrationEnvironment {
     public void shouldOpenCircuitBreakerAfterMultipleFailures() {
 
         for (int i = 0; i < 10; i++) {
-            stubFor(post(urlPathMatching("/updates"))
-                .willReturn(WireMock.serverError()));
+            stubFor(post(urlPathMatching("/updates")).willReturn(WireMock.serverError()));
         }
 
         for (int i = 0; i < 2; i++) {

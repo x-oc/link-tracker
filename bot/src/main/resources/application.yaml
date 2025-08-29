@@ -55,3 +55,18 @@ resilience4j:
           - org.springframework.web.reactive.function.client.WebClientRequestException
           - java.util.concurrent.TimeoutException
           - java.io.IOException
+  circuitbreaker:
+    instances:
+      scrapperCircuitBreaker:
+        failureRateThreshold: 50 # % failures to open circuit
+        minimumNumberOfCalls: 8 # min calls before calculating failure rate
+        slidingWindowSize: 10 # number of calls to track
+        slidingWindowType: COUNT_BASED
+        waitDurationInOpenState: 10s # time to wait before trying again
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: false
+        recordExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException

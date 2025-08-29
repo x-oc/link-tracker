@@ -17,10 +17,9 @@ import liquibase.resource.ResourceAccessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 @Profile("!test")
-//@Component
+// @Component
 @RequiredArgsConstructor
 public class LiquibaseMigrationRunner implements CommandLineRunner {
 

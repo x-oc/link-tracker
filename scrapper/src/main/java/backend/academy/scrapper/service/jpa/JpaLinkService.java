@@ -44,10 +44,11 @@ public class JpaLinkService implements LinkService {
                         chat.links().stream()
                                 .map(LinkEntity::toDto)
                                 .map(link -> {
-                                    List<String> tags = tagRepository.findByLinks_IdAndChat_Id(link.id(), tgChatId)
-                                        .stream().map(TagEntity::name).toList();
-                                    return new LinkResponse(
-                                        link.id(), URI.create(link.url()), tags, link.filters());
+                                    List<String> tags =
+                                            tagRepository.findByLinks_IdAndChat_Id(link.id(), tgChatId).stream()
+                                                    .map(TagEntity::name)
+                                                    .toList();
+                                    return new LinkResponse(link.id(), URI.create(link.url()), tags, link.filters());
                                 })
                                 .toList(),
                         chat.links().size()))

@@ -38,8 +38,7 @@ public class JdbcLinkService implements LinkService {
         var linkResponses = links.stream()
                 .map(link -> {
                     List<String> tags = tagRepository.findByLinkAndChat(link.id(), tgChatId);
-                    return new LinkResponse(
-                        link.id(), URI.create(link.url()), tags, link.filters());
+                    return new LinkResponse(link.id(), URI.create(link.url()), tags, link.filters());
                 })
                 .toList();
         return new ListLinksResponse(linkResponses, linkResponses.size());

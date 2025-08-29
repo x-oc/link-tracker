@@ -44,10 +44,9 @@ public class LinkEntity {
 
     @ManyToMany
     @JoinTable(
-        name = "link_tag",
-        joinColumns = @JoinColumn(name = "link_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+            name = "link_tag",
+            joinColumns = @JoinColumn(name = "link_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<TagEntity> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true)

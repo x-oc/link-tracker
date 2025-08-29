@@ -57,6 +57,7 @@ class LinkUpdateSchedulerTest {
                 null,
                 null,
                 null,
+                null,
                 null);
         linkUpdateScheduler = new LinkUpdateScheduler(linkService, config, providers, sender);
     }

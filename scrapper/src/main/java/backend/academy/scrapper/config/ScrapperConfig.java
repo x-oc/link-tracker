@@ -14,6 +14,7 @@ public record ScrapperConfig(
         Scheduler scheduler,
         String databaseAccessType,
         KafkaProperties kafka,
+        RateLimiterProperties rateLimiter,
         String migrationsPath,
         String messageTransport) {
 
@@ -23,4 +24,6 @@ public record ScrapperConfig(
             boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay, int maxLinksPerCheck) {}
 
     public record KafkaProperties(String updatesTopicName) {}
+
+    public record RateLimiterProperties(Duration timeoutDuration, int limitForPeriod, Duration limitRefreshPeriod) {}
 }

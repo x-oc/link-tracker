@@ -25,26 +25,24 @@ public class ClientConfig {
 
     @Value("${bot.url}")
     private String botUrl;
+
     @Value("${bot.response-timeout}")
     private Duration responseTimeout;
 
     @Bean
     public BotClient botClient(WebClient.Builder webClientBuilder) {
         WebClient webClient = webClientBuilder
-            .clientConnector(new ReactorClientHttpConnector(
-                HttpClient.create()
-                    .responseTimeout(responseTimeout)
-            ))
-            .defaultStatusHandler(
-                HttpStatusCode::is5xxServerError,
-                clientResponse -> Mono.error(new HttpServerErrorException(clientResponse.statusCode())))
-            .defaultStatusHandler(
-                HttpStatusCode::is4xxClientError,
-                clientResponse -> Mono.error(new HttpClientErrorException(clientResponse.statusCode()))
-            )
-            .defaultHeader("Content-Type", "application/json")
-            .baseUrl(botUrl)
-            .build();
+                .clientConnector(
+                        new ReactorClientHttpConnector(HttpClient.create().responseTimeout(responseTimeout)))
+                .defaultStatusHandler(
+                        HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new HttpServerErrorException(clientResponse.statusCode())))
+                .defaultStatusHandler(
+                        HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new HttpClientErrorException(clientResponse.statusCode())))
+                .defaultHeader("Content-Type", "application/json")
+                .baseUrl(botUrl)
+                .build();
 
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory.builderFor(
                         WebClientAdapter.create(webClient))

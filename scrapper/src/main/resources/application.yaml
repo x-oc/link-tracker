@@ -13,6 +13,10 @@ app:
   message-transport: Kafka
   kafka:
     updates-topic-name: updates
+  rate-limiter:
+    limit-for-period: 10
+    limit-refresh-period: 1s
+    timeout-duration: 100ms
 
 provider:
   github:

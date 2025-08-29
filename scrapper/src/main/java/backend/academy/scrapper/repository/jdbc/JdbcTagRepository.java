@@ -15,7 +15,8 @@ public class JdbcTagRepository implements TagRepository {
 
     @Override
     public List<String> findByLinkAndChat(long linkId, long chatId) {
-        return client.sql("""
+        return client.sql(
+                        """
                 SELECT t.name
                 FROM tag t
                 JOIN link_tag lt ON t.id = lt.tag_id
@@ -42,24 +43,25 @@ public class JdbcTagRepository implements TagRepository {
 
     @Override
     public void add(long linkId, String tag, long chatId) {
-        client.sql("""
+        client.sql(
+                        """
                 INSERT INTO tag(name, chat_id)
                 VALUES (:tag, :chat_id)
                 ON CONFLICT (name, chat_id) DO UPDATE
                 SET name = EXCLUDED.name
                 RETURNING id""")
-            .param("tag", tag)
-            .param("chat_id", chatId)
-            .query(Long.class)
-            .optional()
-            .ifPresent(tagId ->
-                client.sql("""
+                .param("tag", tag)
+                .param("chat_id", chatId)
+                .query(Long.class)
+                .optional()
+                .ifPresent(tagId -> client.sql(
+                                """
                     INSERT INTO link_tag(link_id, tag_id)
                     VALUES (:link_id, :tag_id)
                     ON CONFLICT DO NOTHING""")
-                    .param("link_id", linkId)
-                    .param("tag_id", tagId)
-                    .update());
+                        .param("link_id", linkId)
+                        .param("tag_id", tagId)
+                        .update());
     }
 
     @Override
@@ -68,11 +70,12 @@ public class JdbcTagRepository implements TagRepository {
                 .param("link_id", linkId)
                 .update();
 
-        client.sql("""
+        client.sql(
+                        """
                 DELETE FROM tag t
                 WHERE NOT EXISTS (
                     SELECT 1 FROM link_tag lt WHERE lt.tag_id = t.id
                 )""")
-            .update();
+                .update();
     }
 }

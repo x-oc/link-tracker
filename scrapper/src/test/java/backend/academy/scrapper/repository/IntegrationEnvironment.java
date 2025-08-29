@@ -12,12 +12,12 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
 @Testcontainers
 public abstract class IntegrationEnvironment {
     public static PostgreSQLContainer<?> POSTGRES;
-    public static KafkaContainer KAFKA;
+    public static ConfluentKafkaContainer KAFKA;
 
     static {
         POSTGRES = new PostgreSQLContainer<>("postgres:15")
@@ -27,7 +27,8 @@ public abstract class IntegrationEnvironment {
         POSTGRES.start();
         runMigrations(POSTGRES);
 
-        KAFKA = new KafkaContainer("apache/kafka-native:3.8.1").withExposedPorts(19092);
+        KAFKA = new ConfluentKafkaContainer("confluentinc/cp-kafka:7.4.0");
+        KAFKA.start();
     }
 
     @SneakyThrows
@@ -41,6 +42,7 @@ public abstract class IntegrationEnvironment {
 
     @DynamicPropertySource
     static void jdbcProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.kafka.bootstrap-servers", KAFKA::getBootstrapServers);
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);

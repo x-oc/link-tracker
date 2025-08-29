@@ -2,11 +2,14 @@ package backend.academy.scrapper.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import backend.academy.scrapper.config.ScrapperConfig;
 import backend.academy.scrapper.dto.response.ApiErrorResponse;
 import backend.academy.scrapper.exception.ChatAlreadyRegisteredException;
 import backend.academy.scrapper.exception.ChatNotFoundException;
 import backend.academy.scrapper.service.ChatService;
+import backend.academy.scrapper.service.IpRateLimiterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,22 +20,29 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ActiveProfiles("test")
-@WebMvcTest(TelegramChatController.class)
-@Import(TelegramChatControllerTest.TestConfig.class)
-public class TelegramChatControllerTest {
+@WebMvcTest(ChatController.class)
+@TestPropertySource(
+        properties = {
+            "app.rate-limiter.timeout-duration=0s",
+            "app.rate-limiter.limit-for-period=100",
+            "app.rate-limiter.limit-refresh-period=5s"
+        })
+@Import(ChatControllerTest.TestConfig.class)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class ChatControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
+    private final ObjectMapper objectMapper;
+    private final IpRateLimiterService ipRateLimiterService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private ChatService chatService;
+    @MockitoBean
+    private final ChatService chatService;
 
     @Test
     @DisplayName("Тестирование TelegramChatController#registerChat")
@@ -79,9 +89,10 @@ public class TelegramChatControllerTest {
 
     @TestConfiguration
     static class TestConfig {
+
         @Bean
-        public ChatService chatService() {
-            return Mockito.mock(ChatService.class);
+        public IpRateLimiterService ipRateLimiterService(ScrapperConfig config) {
+            return new IpRateLimiterService(config);
         }
     }
 }

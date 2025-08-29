@@ -4,8 +4,10 @@ import backend.academy.scrapper.dto.request.AddLinkRequest;
 import backend.academy.scrapper.dto.request.RemoveLinkRequest;
 import backend.academy.scrapper.dto.response.LinkResponse;
 import backend.academy.scrapper.dto.response.ListLinksResponse;
+import backend.academy.scrapper.service.IpRateLimiterService;
 import backend.academy.scrapper.service.LinkService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(value = "/links", consumes = "application/json", produces = "application/json")
@@ -23,25 +24,34 @@ import java.util.stream.Stream;
 public class LinkController {
 
     private final LinkService linkService;
+    private final IpRateLimiterService ipRateLimiterService;
 
     @Operation(summary = "Получить все отслеживаемые ссылки")
     @GetMapping
-    public ListLinksResponse listLinks(@RequestHeader(name = "Tg-Chat-Id") Long tgChatId) {
-        return linkService.listLinks(tgChatId);
+    public ListLinksResponse listLinks(@RequestHeader(name = "Tg-Chat-Id") Long tgChatId, HttpServletRequest request) {
+        return ipRateLimiterService.executeRateLimited(request.getRemoteAddr(), () -> linkService.listLinks(tgChatId));
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")
     @PostMapping
     public LinkResponse addLink(
-            @RequestHeader(name = "Tg-Chat-Id") Long tgChatId, @RequestBody @Valid AddLinkRequest addLinkRequest) {
-        return linkService.addLink(addLinkRequest.link(), tgChatId, addLinkRequest.tags(), addLinkRequest.filters());
+            @RequestHeader(name = "Tg-Chat-Id") Long tgChatId,
+            @RequestBody @Valid AddLinkRequest addLinkRequest,
+            HttpServletRequest request) {
+        return ipRateLimiterService.executeRateLimited(
+                request.getRemoteAddr(),
+                () -> linkService.addLink(
+                        addLinkRequest.link(), tgChatId, addLinkRequest.tags(), addLinkRequest.filters()));
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
     @DeleteMapping
     public LinkResponse removeLink(
             @RequestHeader(name = "Tg-Chat-Id") Long tgChatId,
-            @RequestBody @Valid RemoveLinkRequest removeLinkRequest) {
-        return linkService.removeLink(removeLinkRequest.link().toString(), tgChatId);
+            @RequestBody @Valid RemoveLinkRequest removeLinkRequest,
+            HttpServletRequest request) {
+        return ipRateLimiterService.executeRateLimited(
+                request.getRemoteAddr(),
+                () -> linkService.removeLink(removeLinkRequest.link().toString(), tgChatId));
     }
 }
