@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@SpringBootTest()
+@SpringBootTest
 public class ListCommandTest extends RedisIntegrationEnvironment {
 
     private final RedisTemplate<String, String> redisTemplate;
@@ -47,7 +47,7 @@ public class ListCommandTest extends RedisIntegrationEnvironment {
     }
 
     @DisplayName(
-            "Тестирование использования кэша Redis в методе ListCommand#handle при последовательных одинаковых запросах")
+        "Тестирование использования кэша Redis в методе ListCommand#handle при последовательных одинаковых запросах")
     @Test
     public void handleShouldUseCacheWhenRequestIsRepeated() {
         LinksStorage mockedLinksStorage = Mockito.mock(RemoteLinksStorage.class);
@@ -57,9 +57,9 @@ public class ListCommandTest extends RedisIntegrationEnvironment {
         RedisTemplate<String, String> spyRedisTemplate = Mockito.spy(redisTemplate);
 
         ListCommand command = new ListCommand(
-                mockedLinksStorage,
-                new ApplicationConfig(null, null, new ApplicationConfig.Redis(600, "list_prefix:")),
-                spyRedisTemplate);
+            mockedLinksStorage,
+            new ApplicationConfig(null, null, new ApplicationConfig.Redis(600, "list_prefix:"), null),
+            spyRedisTemplate);
 
         String firstResponse = command.handle(new CommandArguments("", 1L)).replaceAll("\0+", "");
         String secondResponse = command.handle(new CommandArguments("", 1L)).replaceAll("\0+", "");

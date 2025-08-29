@@ -5,6 +5,10 @@ app:
   redis:
     cache-ttl: 600
     list-command-cache-prefix: "tracked_links:"
+  rate-limiter:
+    limit-for-period: 10
+    limit-refresh-period: 1s
+    timeout-duration: 100ms
 
 spring:
   application:
