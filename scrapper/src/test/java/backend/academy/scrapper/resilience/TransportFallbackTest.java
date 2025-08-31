@@ -1,13 +1,10 @@
 package backend.academy.scrapper.resilience;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doNothing;
 
 import backend.academy.scrapper.dto.request.LinkUpdate;
 import backend.academy.scrapper.repository.IntegrationEnvironment;
@@ -15,12 +12,11 @@ import backend.academy.scrapper.sender.HttpLinkUpdateSender;
 import backend.academy.scrapper.service.ResilienceLinkUpdateSender;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import io.github.resilience4j.circuitbreaker.internal.CircuitBreakerStateMachine;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -30,7 +26,7 @@ import org.springframework.web.client.HttpServerErrorException;
 @WireMockTest(httpPort = 8090)
 @SpringBootTest(properties = "app.message-transport=HTTP")
 @DirtiesContext
-public class CircuitBreakerTest extends IntegrationEnvironment {
+public class TransportFallbackTest extends IntegrationEnvironment {
 
     @MockitoSpyBean
     private ResilienceLinkUpdateSender updateSender;
@@ -41,24 +37,15 @@ public class CircuitBreakerTest extends IntegrationEnvironment {
     private final LinkUpdate linkUpdate = new LinkUpdate(1L, null, null, null);
 
     @Test
-    public void shouldOpenCircuitBreakerAfterMultipleFailures() {
+    void httpShouldFallbackToKafkaIfFailed() {
         updateSender.updateSender(httpLinkUpdateSender);
-        doThrow(new HttpServerErrorException(HttpStatusCode.valueOf(500)))
-                .when(updateSender)
+        doNothing().when(updateSender).fallback(any(LinkUpdate.class), any(HttpServerErrorException.class));
+
+        stubFor(post(urlPathMatching("/updates")).willReturn(WireMock.serverError()));
+
+        Assertions.assertDoesNotThrow(() -> updateSender.sendUpdateReliably(linkUpdate));
+
+        Mockito.verify(updateSender, Mockito.times(1))
                 .fallback(any(LinkUpdate.class), any(HttpServerErrorException.class));
-        doThrow(CallNotPermittedException.createCallNotPermittedException(new CircuitBreakerStateMachine("")))
-                .when(updateSender)
-                .fallback(any(LinkUpdate.class), any(CallNotPermittedException.class));
-
-        for (int i = 0; i < 10; i++) {
-            stubFor(post(urlPathMatching("/updates")).willReturn(WireMock.serverError()));
-        }
-
-        for (int i = 0; i < 2; i++) {
-            assertThrows(HttpServerErrorException.class, () -> updateSender.sendUpdateReliably(linkUpdate));
-        }
-        assertThrows(CallNotPermittedException.class, () -> updateSender.sendUpdateReliably(linkUpdate));
-
-        verify(8, postRequestedFor(WireMock.urlEqualTo("/updates")));
     }
 }

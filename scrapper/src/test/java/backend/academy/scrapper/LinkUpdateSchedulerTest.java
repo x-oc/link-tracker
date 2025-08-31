@@ -13,7 +13,7 @@ import backend.academy.scrapper.api.LinkUpdateEvent;
 import backend.academy.scrapper.config.ScrapperConfig;
 import backend.academy.scrapper.dto.request.LinkUpdate;
 import backend.academy.scrapper.model.Link;
-import backend.academy.scrapper.sender.LinkUpdateSender;
+import backend.academy.scrapper.sender.ReliableLinkUpdateSender;
 import backend.academy.scrapper.service.LinkService;
 import java.net.URI;
 import java.time.Duration;
@@ -36,7 +36,7 @@ class LinkUpdateSchedulerTest {
     private Map<String, InformationProvider> providers;
 
     @Mock
-    private LinkUpdateSender sender;
+    private ReliableLinkUpdateSender sender;
 
     @Mock
     private LinkService linkService;
@@ -81,7 +81,7 @@ class LinkUpdateSchedulerTest {
         linkUpdateScheduler.update();
 
         verify(sender, times(1))
-                .sendUpdate(new LinkUpdate(
+                .sendUpdateReliably(new LinkUpdate(
                         0L, URI.create(url), linkInformation.events().getFirst().description(), List.of(1L, 2L)));
         verify(linkService, times(1))
                 .update(url, linkInformation.events().getFirst().lastUpdated());
@@ -102,7 +102,7 @@ class LinkUpdateSchedulerTest {
 
         linkUpdateScheduler.update();
 
-        verify(sender, never()).sendUpdate(any());
+        verify(sender, never()).sendUpdateReliably(any());
         verify(linkService, times(1)).checkNow(url);
     }
 }

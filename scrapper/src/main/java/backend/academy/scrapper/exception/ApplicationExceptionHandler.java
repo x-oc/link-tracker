@@ -2,6 +2,7 @@ package backend.academy.scrapper.exception;
 
 import backend.academy.scrapper.dto.response.ApiErrorResponse;
 import java.util.Arrays;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.TypeMismatchException;
@@ -123,5 +124,24 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
                                 .map(StackTraceElement::toString)
                                 .toList()),
                 ex.status());
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<ApiErrorResponse> handleRequestNotPermitted(RequestNotPermitted ex) {
+        log.atWarn()
+            .setMessage("Circuit breaker does not permit request.")
+            .addKeyValue("message", ex.getMessage())
+            .addKeyValue("status", HttpStatusCode.valueOf(429))
+            .log();
+        return new ResponseEntity<>(
+            new ApiErrorResponse(
+                "Too many requests",
+                "429",
+                ex.getClass().getSimpleName(),
+                ex.getMessage(),
+                Arrays.stream(ex.getStackTrace())
+                    .map(StackTraceElement::toString)
+                    .toList()),
+            HttpStatusCode.valueOf(429));
     }
 }

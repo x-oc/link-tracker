@@ -5,7 +5,7 @@ import backend.academy.scrapper.api.LinkInformation;
 import backend.academy.scrapper.config.ScrapperConfig;
 import backend.academy.scrapper.dto.request.LinkUpdate;
 import backend.academy.scrapper.model.Link;
-import backend.academy.scrapper.sender.LinkUpdateSender;
+import backend.academy.scrapper.sender.ReliableLinkUpdateSender;
 import backend.academy.scrapper.service.LinkService;
 import java.net.URI;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class LinkUpdateScheduler {
     private final LinkService linkService;
     private final ScrapperConfig scrapperConfig;
     private final Map<String, InformationProvider> informationProviders;
-    private final LinkUpdateSender sender;
+    private final ReliableLinkUpdateSender sender;
 
     @Scheduled(fixedDelayString = "#{@'app-backend.academy.scrapper.config.ScrapperConfig'.scheduler.interval}")
     public void update() {
@@ -55,7 +55,7 @@ public class LinkUpdateScheduler {
         linkInformation
                 .events()
                 .reversed()
-                .forEach(event -> sender.sendUpdate(
+                .forEach(event -> sender.sendUpdateReliably(
                         new LinkUpdate(link.id(), URI.create(link.url()), event.description(), subscribers)));
     }
 }
